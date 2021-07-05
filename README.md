@@ -1,6 +1,6 @@
 # lan_scanner
 
-[Dart](https://dart.dev) / [Flutter](https://flutter.dev) package that allows to discover network devices in local network.
+[Dart](https://dart.dev) / [Flutter](https://flutter.dev) package that allows to discover network devices in local network ([LAN](https://en.wikipedia.org/wiki/Local_area_network)).
 
 Note: This library is intended to be used on **[Class C](https://en.wikipedia.org/wiki/Classful_network#Classful_addressing_definition)** networks.
 

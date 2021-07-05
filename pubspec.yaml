@@ -1,7 +1,7 @@
 name: lan_scanner
-description: A new Flutter package project.
+description: A package that allows to discover local network devices.
 version: 0.0.1
-homepage:
+homepage: https://github.com/ivirtex/lan_scanner
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
