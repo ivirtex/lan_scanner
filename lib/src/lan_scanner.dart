@@ -3,11 +3,13 @@ import 'dart:io';
 import 'package:lan_scanner/src/models/device_address.dart';
 import 'dart:async';
 
-/// [LanScanner
+/// [LanScanner]
 class LanScanner {
-  String? _subnet;
-  int? _port;
-  Duration _timeout = const Duration(seconds: 5);
+  LanScanner(this._subnet, [this._port, this._timeout]);
+
+  final String? _subnet;
+  int? _port = 80;
+  Duration? _timeout = const Duration(seconds: 5);
 
   bool _isScanInProgress = false;
 
