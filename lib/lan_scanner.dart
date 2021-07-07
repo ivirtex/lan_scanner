@@ -1,3 +1,3 @@
 library lan_scanner;
 
-export 'package:lan_scanner/lan_scanner.dart';
+export 'package:lan_scanner/src/lan_scanner.dart';
