@@ -1,11 +1,12 @@
-import 'dart:io';
-
+import 'package:dart_ping/dart_ping.dart';
 import 'package:lan_scanner/src/models/device_address.dart';
 import 'dart:async';
+import 'dart:io';
 
 /// [LanScanner]
 class LanScanner {
   bool _isScanInProgress = false;
+  List<Future<PingData>> futures = <Future<PingData>>[];
 
   /// Checks if scan is already in progress.
   /// For performance reasons, you can't begin scan while the first one is running
@@ -18,17 +19,12 @@ class LanScanner {
   /// even in the case, they are not online.
   Stream<DeviceAddress> discover({
     required String? subnet,
-    int? port = 80,
     Duration timeout = const Duration(seconds: 5),
     bool verbose = false,
   }) {
     // Check for possible errors in the configuration
-    if (subnet == null || port == null) {
-      throw 'Subnet or port is not set yet';
-    }
-
-    if (port < 1 || port > 65535) {
-      throw 'Incorrect port';
+    if (subnet == null) {
+      throw 'Subnet is not set yet';
     }
 
     if (_isScanInProgress) {
@@ -36,59 +32,44 @@ class LanScanner {
     }
 
     final controller = StreamController<DeviceAddress>();
-    final futureSockets = <Future<Socket>>[];
 
     for (int addr = 1; addr <= 255; ++addr) {
       final hostToPing = '$subnet.$addr';
-      final Future<Socket> connection =
-          Socket.connect(hostToPing, port, timeout: timeout);
 
-      futureSockets.add(connection);
+      final ping = Ping(hostToPing, count: 1, timeout: timeout.inSeconds);
+      final futurePing = ping.stream.last;
 
-      connection.then((socket) {
-        socket.destroy();
+      futures.add(futurePing);
 
-        // If the connection succeeds, we can add it to the sink
-        controller.sink.add(DeviceAddress(
-          exists: true,
-          ip: hostToPing,
-          port: port,
-        ));
-      }).catchError((dynamic err) {
-        if (!(err is SocketException)) {
-          throw err;
-        }
+      futurePing.then((data) {
+        PingSummary? summary = data.summary;
 
-        if ((err.osError == null ||
-                _errorCodes.contains(err.osError?.errorCode)) &&
-            verbose) {
-          controller.sink
-              .add(DeviceAddress(exists: false, ip: hostToPing, port: port));
-        } else {
-          throw err;
+        if (summary != null) {
+          int received = summary.received;
+
+          if (received > 0) {
+            controller.add(DeviceAddress(
+              exists: true,
+              ip: '$subnet.$addr',
+            ));
+          } else {
+            if (verbose) {
+              controller.add(DeviceAddress(
+                exists: false,
+                ip: '$subnet.$addr',
+              ));
+            }
+          }
         }
       });
     }
 
-    Future.wait<Socket>(futureSockets).then((_) {
-      controller.sink.close();
-      _isScanInProgress = false;
-    }).catchError((_) {
-      controller.sink.close();
-      _isScanInProgress = false;
-    });
+    Future.wait(futures)
+        .then<void>((_) => controller.close())
+        .catchError((_) => controller.close());
+
+    _isScanInProgress = false;
 
     return controller.stream;
   }
-
-  /// 13: Connection failed (OS Error: Permission denied)
-  /// 49: Bind failed (OS Error: Can't assign requested address)
-  /// 61: OS Error: Connection refused
-  /// 64: Connection failed (OS Error: Host is down)
-  /// 65: No route to host
-  /// 101: Network is unreachable
-  /// 111: Connection refused
-  /// 113: No route to host
-  /// <empty>: SocketException: Connection timed out
-  static final _errorCodes = [13, 49, 61, 64, 65, 101, 111, 113];
 }
