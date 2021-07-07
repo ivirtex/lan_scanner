@@ -5,12 +5,6 @@ import 'dart:async';
 
 /// [LanScanner]
 class LanScanner {
-  LanScanner(this._subnet, [this._port, this._timeout]);
-
-  final String? _subnet;
-  int? _port = 80;
-  Duration? _timeout = const Duration(seconds: 5);
-
   bool _isScanInProgress = false;
 
   /// Checks if scan is already in progress.
@@ -22,13 +16,18 @@ class LanScanner {
   /// If [verbose] is set to true,
   /// [discover] returns instances of [DeviceAddress] for every IP on the network,
   /// even in the case, they are not online.
-  Stream<DeviceAddress> discover({bool verbose = false}) {
+  Stream<DeviceAddress> discover({
+    required String? subnet,
+    int? port = 80,
+    Duration timeout = const Duration(seconds: 5),
+    bool verbose = false,
+  }) {
     // Check for possible errors in the configuration
-    if (_subnet == null || _port == null) {
+    if (subnet == null || port == null) {
       throw 'Subnet or port is not set yet';
     }
 
-    if (_port! < 1 || _port! > 65535) {
+    if (port < 1 || port > 65535) {
       throw 'Incorrect port';
     }
 
@@ -40,9 +39,9 @@ class LanScanner {
     final futureSockets = <Future<Socket>>[];
 
     for (int addr = 1; addr <= 255; ++addr) {
-      final hostToPing = '$_subnet.$addr';
+      final hostToPing = '$subnet.$addr';
       final Future<Socket> connection =
-          Socket.connect(hostToPing, _port!, timeout: _timeout);
+          Socket.connect(hostToPing, port, timeout: timeout);
 
       futureSockets.add(connection);
 
@@ -53,7 +52,7 @@ class LanScanner {
         controller.sink.add(DeviceAddress(
           exists: true,
           ip: hostToPing,
-          port: _port,
+          port: port,
         ));
       }).catchError((dynamic err) {
         if (!(err is SocketException)) {
@@ -64,16 +63,20 @@ class LanScanner {
                 _errorCodes.contains(err.osError?.errorCode)) &&
             verbose) {
           controller.sink
-              .add(DeviceAddress(exists: false, ip: hostToPing, port: _port));
+              .add(DeviceAddress(exists: false, ip: hostToPing, port: port));
         } else {
           throw err;
         }
       });
     }
 
-    Future.wait<Socket>(futureSockets)
-        .then((value) => controller.sink.close())
-        .catchError((dynamic err) => controller.sink.close());
+    Future.wait<Socket>(futureSockets).then((_) {
+      controller.sink.close();
+      _isScanInProgress = false;
+    }).catchError((_) {
+      controller.sink.close();
+      _isScanInProgress = false;
+    });
 
     return controller.stream;
   }
