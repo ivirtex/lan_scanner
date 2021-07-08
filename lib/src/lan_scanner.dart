@@ -1,8 +1,13 @@
-import 'package:lan_scanner/src/models/device_address.dart';
+// Dart imports:
 import 'dart:async';
 import 'dart:io';
 
-/// [LanScanner]
+// Project imports:
+import 'package:lan_scanner/src/models/device_address.dart';
+
+/// [LanScanner] is class to handle discovering devices in the local network
+///
+/// Call [discover] on [LanScanner] instance to get access to the stream
 class LanScanner {
   bool _isScanInProgress = false;
 
@@ -26,32 +31,60 @@ class LanScanner {
       throw 'Subnet or port is not set yet';
     }
 
+    if (port < 1 || port > 65535) {
+      throw 'Incorrect port';
+    }
+
     if (_isScanInProgress) {
       throw 'Cannot begin scanning while the first one is still running';
     }
 
+    final controller = StreamController<DeviceAddress>();
+    final futureSockets = <Future<Socket>>[];
+
+    _isScanInProgress = true;
+
     for (int addr = 1; addr <= 255; ++addr) {
       final hostToPing = '$subnet.$addr';
+      final Future<Socket> connection =
+          Socket.connect(hostToPing, port, timeout: timeout);
 
-      try {
-        final Socket socket = await Socket.connect(hostToPing, port);
+      futureSockets.add(connection);
+
+      connection.then((socket) {
         socket.destroy();
 
-        yield DeviceAddress(exists: true, ip: hostToPing, port: port);
-      } catch (err) {
+        // If the connection succeeds, we can add it to the sink
+        controller.sink.add(DeviceAddress(
+          exists: true,
+          ip: hostToPing,
+          port: port,
+        ));
+      }).catchError((dynamic err) {
         if (!(err is SocketException)) {
-          rethrow;
+          throw err;
         }
 
         if (err.osError == null ||
             _errorCodes.contains(err.osError?.errorCode)) {
-          yield DeviceAddress(exists: false, ip: hostToPing, port: port);
+          controller.sink
+              .add(DeviceAddress(exists: true, ip: hostToPing, port: port));
         } else {
-          // Error 23,24: Too many open files in system
-          rethrow;
+          throw err;
         }
+      });
+
+      if (verbose) {
+        controller.sink
+            .add(DeviceAddress(exists: false, ip: hostToPing, port: port));
       }
     }
+
+    Future.wait<Socket>(futureSockets).then((_) {
+      controller.sink.close();
+    }).catchError((_) {
+      controller.sink.close();
+    });
 
     _isScanInProgress = false;
   }
