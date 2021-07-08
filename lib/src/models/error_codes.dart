@@ -1,3 +1,4 @@
+/// Represents predefined errors
 abstract class ErrorCodes {
   /// 13: Connection failed (OS Error: Permission denied)
   /// 49: Bind failed (OS Error: Can't assign requested address)

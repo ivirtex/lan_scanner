@@ -1,3 +1,4 @@
+/// Represents a device in the network
 class DeviceAddress {
   DeviceAddress({
     required this.exists,

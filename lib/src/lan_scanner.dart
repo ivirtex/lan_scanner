@@ -10,10 +10,11 @@ import 'package:lan_scanner/src/models/device_address.dart';
 import 'package:lan_scanner/src/models/error_codes.dart';
 import 'package:lan_scanner/src/models/progress_callback.dart';
 
-/// [LanScanner] is class to handle discovering devices in the local network
+/// A class to handle discovering devices in the local network
 ///
 /// Call [quickScan] or [preciseScan] on [LanScanner] instance to get access to the stream
 class LanScanner {
+  /// State of the scanning action
   bool _isScanInProgress = false;
 
   /// Checks if scan is already in progress.
