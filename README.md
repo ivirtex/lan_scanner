@@ -9,12 +9,13 @@ Note: This library is intended to be used on **[Class C](https://en.wikipedia.or
 This project is a rework of already existing [ping_discover_network](https://pub.dev/packages/ping_discover_network), however it is no longer maintained.
 
 [pub.dev page](https://pub.dev/packages/lan_scanner) | [API reference](https://pub.dev/documentation/lan_scanner/latest/)
+
 ## Getting Started
 
 Add the package to your pubspec.yaml:
 
 ```yaml
-lan_scanner: ^1.0.0
+lan_scanner: ^1.0.1
 ```
 
 Import the library:
