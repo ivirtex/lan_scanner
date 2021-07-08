@@ -59,9 +59,8 @@ class LanScanner {
           throw err;
         }
 
-        if ((err.osError == null ||
-                _errorCodes.contains(err.osError?.errorCode)) &&
-            verbose) {
+        if (err.osError == null ||
+            _errorCodes.contains(err.osError?.errorCode)) {
           controller.sink
               .add(DeviceAddress(exists: false, ip: hostToPing, port: port));
         } else {
@@ -72,11 +71,11 @@ class LanScanner {
 
     Future.wait<Socket>(futureSockets).then((_) {
       controller.sink.close();
-      _isScanInProgress = false;
     }).catchError((_) {
       controller.sink.close();
-      _isScanInProgress = false;
     });
+
+    _isScanInProgress = false;
 
     return controller.stream;
   }
