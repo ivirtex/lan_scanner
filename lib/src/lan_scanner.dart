@@ -1,10 +1,11 @@
 // Dart imports:
 import 'dart:async';
 import 'dart:io';
-import 'dart:math';
+
+// Package imports:
+import 'package:dart_ping/dart_ping.dart';
 
 // Project imports:
-import 'package:dart_ping/dart_ping.dart';
 import 'package:lan_scanner/src/models/device_address.dart';
 import 'package:lan_scanner/src/models/error_codes.dart';
 import 'package:lan_scanner/src/models/progress_callback.dart';
