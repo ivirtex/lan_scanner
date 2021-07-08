@@ -75,6 +75,7 @@ class LanScanner {
           throw err;
         }
 
+
         // Check if we got predefined error or just connection timed out
         // If given error was predefined, we can still consider this IP as valid host
         if (err.osError == null ||
