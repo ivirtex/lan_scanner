@@ -55,3 +55,5 @@ var subnet = ipToSubnet(wifiIP);
 ## Features and bugs
 
 Please file feature requests and bugs at the [issue tracker](https://github.com/ivirtex/lan_scanner).
+
+[![Open in Visual Studio Code](https://open.vscode.dev/badges/open-in-vscode.svg)](https://open.vscode.dev/ivirtex/lan_scanner)
