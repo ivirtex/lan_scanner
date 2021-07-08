@@ -1,11 +1,10 @@
 name: lan_scanner
-description: A package that allows to discover local network devices.
-version: 0.0.1
+description: A package that allows to discover local network devices via UDP or ICMP pings.
+version: 1.0.0
 homepage: https://github.com/ivirtex/lan_scanner
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
-  flutter: ">=1.17.0"
 
 dependencies:
   flutter:
@@ -16,6 +15,8 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+  import_sorter: ^4.6.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
