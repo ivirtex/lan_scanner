@@ -15,7 +15,7 @@ class LanScanner {
   /// For performance reasons, you can't begin scan while the first one is running
   bool get isScanInProgress => _isScanInProgress;
 
-  /// Discovers network devices in the given subnet and port.
+  /// Discovers network devices in the given [subnet] and [port].
   ///
   /// If [verbose] is set to true,
   /// [discover] returns instances of [DeviceAddress] for every IP on the network,
@@ -25,7 +25,7 @@ class LanScanner {
     int? port = 80,
     Duration timeout = const Duration(seconds: 5),
     bool verbose = false,
-  }) async* {
+  }) {
     // Check for possible errors in the configuration
     if (subnet == null || port == null) {
       throw 'Subnet or port is not set yet';
@@ -65,6 +65,8 @@ class LanScanner {
           throw err;
         }
 
+        // Check if we got predefined error or just connection timed out
+        // If given error was predefined, we can still consider this IP as valid host
         if (err.osError == null ||
             _errorCodes.contains(err.osError?.errorCode)) {
           controller.sink
@@ -80,6 +82,7 @@ class LanScanner {
       }
     }
 
+    // Wait for all futures to finish, then close the sink
     Future.wait<Socket>(futureSockets).then((_) {
       controller.sink.close();
     }).catchError((_) {
@@ -87,6 +90,8 @@ class LanScanner {
     });
 
     _isScanInProgress = false;
+
+    return controller.stream;
   }
 
   /// 13: Connection failed (OS Error: Permission denied)
