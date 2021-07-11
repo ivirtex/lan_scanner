@@ -24,8 +24,8 @@ Import the library:
 import 'package:lan_scanner/lan_scanner.dart';
 ```
 
-Create an instance of the clas and call
-`quickScan()` or `preciseScan()` on it:
+Create an instance of the class and call
+[`quickScan()`](https://pub.dev/documentation/lan_scanner/latest/lan_scanner/LanScanner/quickScan.html) or [`preciseScan()`](https://pub.dev/documentation/lan_scanner/latest/lan_scanner/LanScanner/preciseScan.html) on it:
 
 ```dart
 final port = 80;

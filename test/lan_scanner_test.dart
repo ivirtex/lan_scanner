@@ -1,5 +1,7 @@
 // Package imports:
 import 'package:flutter_test/flutter_test.dart';
+
+// Project imports:
 import 'package:lan_scanner/lan_scanner.dart';
 
 void main() {
