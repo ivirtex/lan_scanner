@@ -15,7 +15,7 @@ This project is a rework of already existing [ping_discover_network](https://pub
 Add the package to your pubspec.yaml:
 
 ```yaml
-lan_scanner: ^1.0.1
+lan_scanner: ^1.0.2
 ```
 
 Import the library:

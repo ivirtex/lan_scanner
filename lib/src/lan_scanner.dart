@@ -3,7 +3,7 @@ import 'dart:async';
 import 'dart:io';
 
 // Package imports:
-import 'package:dart_ping/dart_ping.dart';
+import 'package:flutter_icmp_ping/flutter_icmp_ping.dart';
 
 // Project imports:
 import 'package:lan_scanner/src/models/device_address.dart';
@@ -75,7 +75,6 @@ class LanScanner {
           throw err;
         }
 
-
         // Check if we got predefined error or just connection timed out
         // If given error was predefined, we can still consider this IP as valid host
         if (err.osError == null ||
@@ -138,23 +137,28 @@ class LanScanner {
     for (int addr = firstIP; addr <= lastIP; ++addr) {
       final hostToPing = '$subnet.$addr';
 
-      final ping = Ping(hostToPing, count: 1, timeout: timeout.inSeconds);
+      final ping = Ping(hostToPing,
+          count: 1, timeout: timeout.inMilliseconds.toDouble());
 
-      await for (PingData pingData in ping.stream) {
-        if (pingData.summary != null) {
-          PingSummary summary = pingData.summary!;
+      try {
+        await for (PingData pingData in ping.stream) {
+          if (pingData.summary != null) {
+            PingSummary summary = pingData.summary!;
 
-          int received = summary.received;
+            int received = summary.received!;
 
-          if (received > 0) {
-            yield DeviceAddress(
-              exists: true,
-              ip: '$subnet.$addr',
-            );
+            if (received > 0) {
+              yield DeviceAddress(
+                exists: true,
+                ip: '$subnet.$addr',
+              );
+            }
           }
         }
+        progressCallback?.call(((addr) / (lastIP)).toStringAsPrecision(2));
+      } catch (err) {
+        print(err);
       }
-      progressCallback?.call(((addr) / (lastIP)).toStringAsPrecision(2));
     }
 
     _isScanInProgress = false;
