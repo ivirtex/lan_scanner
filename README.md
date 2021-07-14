@@ -1,8 +1,9 @@
 # lan_scanner
 
-![Pub badge](https://img.shields.io/pub/v/lan_scanner)
+[![Pub badge](https://img.shields.io/pub/v/lan_scanner)](https://pub.dartlang.org/packages/lan_scanner)
+[![style: lint](https://img.shields.io/badge/style-lint-4BC0F5.svg)](https://pub.dev/packages/lint)
 
-[Dart](https://dart.dev) / [Flutter](https://flutter.dev) package that allows to discover network devices in local network ([LAN](https://en.wikipedia.org/wiki/Local_area_network)).
+[Dart](https://dart.dev) / [Flutter](https://flutter.dev) package that allows discovering network devices in local network ([LAN](https://en.wikipedia.org/wiki/Local_area_network)).
 
 Note: This library is intended to be used on **[Class C](https://en.wikipedia.org/wiki/Classful_network#Classful_addressing_definition)** networks.
 
@@ -15,7 +16,7 @@ This project is a rework of already existing [ping_discover_network](https://pub
 Add the package to your pubspec.yaml:
 
 ```yaml
-lan_scanner: ^1.0.2
+lan_scanner: ^1.0.3
 ```
 
 Import the library:

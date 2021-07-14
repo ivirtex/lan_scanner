@@ -70,8 +70,8 @@ class LanScanner {
           ip: hostToPing,
           port: port,
         ));
-      }).catchError((dynamic err) {
-        if (!(err is SocketException)) {
+      }).catchError((Object err) {
+        if (err is! SocketException) {
           throw err;
         }
 
@@ -141,11 +141,11 @@ class LanScanner {
           count: 1, timeout: timeout.inMilliseconds.toDouble());
 
       try {
-        await for (PingData pingData in ping.stream) {
+        await for (final PingData pingData in ping.stream) {
           if (pingData.summary != null) {
-            PingSummary summary = pingData.summary!;
+            final PingSummary summary = pingData.summary!;
 
-            int received = summary.received!;
+            final int received = summary.received!;
 
             if (received > 0) {
               yield DeviceAddress(
@@ -155,9 +155,9 @@ class LanScanner {
             }
           }
         }
-        progressCallback?.call(((addr) / (lastIP)).toStringAsPrecision(2));
+        progressCallback?.call((addr / lastIP).toStringAsPrecision(2));
       } catch (err) {
-        print(err);
+        // print(err);
       }
     }
 

@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.3
+
+* Added lint rules
+* Updated docs
+
 ## 1.0.2
 
 * Changed main dependency to support iOS
