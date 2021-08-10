@@ -16,7 +16,7 @@ This project is a rework of already existing [ping_discover_network](https://pub
 Add the package to your pubspec.yaml:
 
 ```yaml
-lan_scanner: ^1.0.3
+lan_scanner: ^2.0.0
 ```
 
 Import the library:
@@ -35,18 +35,19 @@ final timeout = Duration(seconds: 5);
 
 final scanner = LanScanner();
 
-final stream = scanner.quickScan(
-    subnet: _subnet,
-    timeout: _timeout,
-    progressCallback: (progress) {
-    print(progress);
-    });
+final stream = scanner.preciseScan(
+    subnet,
+    timeout: timeout,
+    progressCallback: (ProgressModel progress) {
+        print('${progress.percent * 100}% 192.168.0.${progress.currIP}');
+    },
+);
 
-stream.listen((DeviceAddress device) {
+stream.listen((DeviceModel device) {
     if (device.exists) {
         print("Found device on ${device.ip}:${device.port}");
     }
-    });
+});
 ```
 
 If you don't know what is your subnet, you can use [network_info_plus](https://pub.dev/packages/network_info_plus) and then `ipToSubnet()` function.

@@ -29,7 +29,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  Set<DeviceAddress> hosts = Set<DeviceAddress>();
+  Set<DeviceModel> hosts = Set<DeviceModel>();
   LanScanner scanner = LanScanner();
 
   @override
@@ -43,9 +43,14 @@ class _MyHomePageState extends State<MyHomePage> {
         onPressed: () {
           hosts.clear();
 
-          var stream = scanner.quickScan(subnet: '192.168.0');
+          var stream = scanner.preciseScan(
+            '192.168.0',
+            progressCallback: (ProgressModel progress) {
+              print('${progress.percent * 100}% 192.168.0.${progress.currIP}');
+            },
+          );
 
-          stream.listen((DeviceAddress device) {
+          stream.listen((DeviceModel device) {
             if (device.exists) {
               setState(() {
                 hosts.add(device);

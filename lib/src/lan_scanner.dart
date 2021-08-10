@@ -6,9 +6,10 @@ import 'dart:io';
 import 'package:flutter_icmp_ping/flutter_icmp_ping.dart';
 
 // Project imports:
-import 'package:lan_scanner/src/models/device_address.dart';
+import 'package:lan_scanner/src/models/device_model.dart';
 import 'package:lan_scanner/src/models/error_codes.dart';
 import 'package:lan_scanner/src/models/progress_callback.dart';
+import 'package:lan_scanner/src/models/progress_model.dart';
 
 /// A class to handle discovering devices in the local network
 ///
@@ -24,12 +25,12 @@ class LanScanner {
   /// Discovers network devices in the given [subnet] and [port].
   ///
   /// If [verbose] is set to true,
-  /// [quickScan] returns instances of [DeviceAddress] for every pontential IP
+  /// [quickScan] returns instances of [DeviceModel] for every potential IP
   /// on the network, even in the case, they returned an error code.
   ///
   /// This method uses UDP to ping the network.
   /// It is fast, but some devices may not respond to the ping.
-  Stream<DeviceAddress> quickScan({
+  Stream<DeviceModel> quickScan({
     required String? subnet,
     int? port = 80,
     Duration timeout = const Duration(seconds: 5),
@@ -48,7 +49,7 @@ class LanScanner {
       throw 'Cannot begin scanning while the first one is still running';
     }
 
-    final controller = StreamController<DeviceAddress>();
+    final controller = StreamController<DeviceModel>();
     final futureSockets = <Future<Socket>>[];
     final _errorCodes = ErrorCodes.errorCodes;
 
@@ -65,7 +66,7 @@ class LanScanner {
         socket.destroy();
 
         // If the connection succeeds, we can add it to the sink
-        controller.sink.add(DeviceAddress(
+        controller.sink.add(DeviceModel(
           exists: true,
           ip: hostToPing,
           port: port,
@@ -80,7 +81,7 @@ class LanScanner {
         if (err.osError == null ||
             _errorCodes.contains(err.osError?.errorCode)) {
           if (verbose) {
-            controller.sink.add(DeviceAddress(
+            controller.sink.add(DeviceModel(
               exists: false,
               ip: hostToPing,
               port: port,
@@ -112,13 +113,15 @@ class LanScanner {
   /// so it is possible to provide a range to scan.
   ///
   /// [progressCallback] is scaled from 0.01 to 1
-  Stream<DeviceAddress> preciseScan({
-    required String? subnet,
+  Stream<DeviceModel> preciseScan(
+    String? subnet, {
     int firstIP = 1,
     int lastIP = 255,
-    Duration timeout = const Duration(seconds: 5),
     ProgressCallback? progressCallback,
-  }) async* {
+  }) {
+    late StreamController<DeviceModel> controller;
+    int currAddr = firstIP;
+
     // Check for possible errors in the configuration
     if (subnet == null) {
       throw 'Subnet is not set yet';
@@ -132,35 +135,50 @@ class LanScanner {
       throw 'Cannot begin scanning while the first one is still running';
     }
 
-    _isScanInProgress = true;
+    Future<void> startScan() async {
+      _isScanInProgress = true;
+      currAddr = firstIP;
 
-    for (int addr = firstIP; addr <= lastIP; ++addr) {
-      final hostToPing = '$subnet.$addr';
+      for (; currAddr <= lastIP; ++currAddr) {
+        final hostToPing = '$subnet.$currAddr';
 
-      final ping = Ping(hostToPing,
-          count: 1, timeout: timeout.inMilliseconds.toDouble());
+        final ping = Ping(hostToPing, count: 1);
 
-      try {
-        await for (final PingData pingData in ping.stream) {
-          if (pingData.summary != null) {
-            final PingSummary summary = pingData.summary!;
+        try {
+          await for (final PingData pingData in ping.stream) {
+            if (pingData.summary != null) {
+              final PingSummary summary = pingData.summary!;
 
-            final int received = summary.received!;
+              final int received = summary.received!;
 
-            if (received > 0) {
-              yield DeviceAddress(
-                exists: true,
-                ip: '$subnet.$addr',
-              );
+              if (received > 0) {
+                controller.add(DeviceModel(exists: true, ip: hostToPing));
+              }
             }
           }
+          progressCallback?.call(ProgressModel(
+            percent: double.parse((currAddr / lastIP).toStringAsPrecision(2)),
+            currIP: currAddr,
+          ));
+        } catch (err) {
+          // print(err);
         }
-        progressCallback?.call((addr / lastIP).toStringAsPrecision(2));
-      } catch (err) {
-        // print(err);
       }
+
+      _isScanInProgress = false;
     }
 
-    _isScanInProgress = false;
+    void stopScan() {
+      currAddr = lastIP;
+    }
+
+    controller = StreamController<DeviceModel>(
+      onCancel: stopScan,
+      onListen: startScan,
+      onPause: stopScan,
+      onResume: startScan,
+    );
+
+    return controller.stream;
   }
 }

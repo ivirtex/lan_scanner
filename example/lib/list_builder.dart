@@ -2,14 +2,14 @@ import 'package:example/status_card.dart';
 import 'package:flutter/material.dart';
 import 'package:lan_scanner/lan_scanner.dart';
 
-Padding buildHostsListView(Set<DeviceAddress> hosts) {
+Padding buildHostsListView(Set<DeviceModel> hosts) {
   return Padding(
     padding: const EdgeInsets.symmetric(horizontal: 5),
     child: ListView.builder(
       shrinkWrap: true,
       itemCount: hosts.length,
       itemBuilder: (context, index) {
-        DeviceAddress currData = hosts.elementAt(index);
+        DeviceModel currData = hosts.elementAt(index);
 
         return Card(
           shape: RoundedRectangleBorder(

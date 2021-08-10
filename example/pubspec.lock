@@ -68,7 +68,7 @@ packages:
       name: flutter_icmp_ping
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.0.1"
+    version: "3.0.2"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -77,10 +77,10 @@ packages:
   lan_scanner:
     dependency: "direct main"
     description:
-      path: "/Users/hubertjozwiak/Desktop/Development/lan_scanner"
+      path: "C:\\Users\\hjozw\\OneDrive\\Dokumenty\\Development\\Flutter\\lan_scanner"
       relative: false
     source: path
-    version: "1.0.3"
+    version: "2.0.0"
   matcher:
     dependency: transitive
     description:
