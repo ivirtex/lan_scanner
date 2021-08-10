@@ -1,7 +1,7 @@
 /// Represents a device in the network
-class DeviceAddress {
+class DeviceModel {
   /// Constructor for a device address
-  DeviceAddress({
+  DeviceModel({
     required this.exists,
     this.ip,
     this.port,
