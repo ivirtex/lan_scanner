@@ -7,7 +7,7 @@
 
 Note: This library is intended to be used on **[Class C](https://en.wikipedia.org/wiki/Classful_network#Classful_addressing_definition)** networks.
 
-This project is a rework of already existing [ping_discover_network](https://pub.dev/packages/ping_discover_network), however it is no longer maintained.
+This project is a rework of already existing [ping_discover_network](https://pub.dev/packages/ping_discover_network), which is no longer maintained.
 
 [pub.dev page](https://pub.dev/packages/lan_scanner) | [API reference](https://pub.dev/documentation/lan_scanner/latest/)
 
@@ -16,7 +16,7 @@ This project is a rework of already existing [ping_discover_network](https://pub
 Add the package to your pubspec.yaml:
 
 ```yaml
-lan_scanner: ^2.0.0
+lan_scanner: ^2.0.1
 ```
 
 Import the library:
