@@ -1,24 +1,29 @@
-import 'package:example/status_card.dart';
+// Flutter imports:
 import 'package:flutter/material.dart';
+
+// Package imports:
 import 'package:lan_scanner/lan_scanner.dart';
 
-Padding buildHostsListView(Set<DeviceModel> hosts) {
+// Project imports:
+import 'status_card.dart';
+
+Padding buildHostsListView(Set<HostModel> hosts) {
   return Padding(
     padding: const EdgeInsets.symmetric(horizontal: 5),
     child: ListView.builder(
       shrinkWrap: true,
       itemCount: hosts.length,
       itemBuilder: (context, index) {
-        DeviceModel currData = hosts.elementAt(index);
+        HostModel currData = hosts.elementAt(index);
 
         return Card(
-          shape: RoundedRectangleBorder(
+          shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(10)),
           ),
           child: ListTile(
-              leading: StatusCard(
-                color: currData.exists ? Colors.greenAccent : Colors.redAccent,
-                text: currData.exists ? "Online" : "Offline",
+              leading: const StatusCard(
+                color: Colors.greenAccent,
+                text: "Online",
               ),
               title: Text(currData.ip ?? "N/A")),
         );

@@ -1,12 +1,19 @@
+// Flutter imports:
 import 'package:flutter/material.dart';
+
+// Package imports:
 import 'package:lan_scanner/lan_scanner.dart';
-import 'package:example/list_builder.dart';
+
+// Project imports:
+import 'list_builder.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -14,13 +21,13 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'LAN Scanner Demo'),
+      home: const MyHomePage(title: 'LAN Scanner Demo'),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key? key, required this.title}) : super(key: key);
+  const MyHomePage({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
@@ -29,7 +36,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  Set<DeviceModel> hosts = Set<DeviceModel>();
+  Set<HostModel> hosts = <HostModel>{};
   LanScanner scanner = LanScanner();
 
   @override
@@ -43,23 +50,18 @@ class _MyHomePageState extends State<MyHomePage> {
         onPressed: () {
           hosts.clear();
 
-          var stream = scanner.preciseScan(
+          var stream = scanner.icmpScan(
             '192.168.0',
-            progressCallback: (ProgressModel progress) {
-              print('${progress.percent * 100}% 192.168.0.${progress.currIP}');
-            },
           );
 
-          stream.listen((DeviceModel device) {
-            if (device.exists) {
-              setState(() {
-                hosts.add(device);
-              });
-            }
+          stream.listen((HostModel device) {
+            setState(() {
+              hosts.add(device);
+            });
           });
         },
         tooltip: 'Start scanning',
-        child: Icon(Icons.play_arrow),
+        child: const Icon(Icons.play_arrow),
       ),
     );
   }

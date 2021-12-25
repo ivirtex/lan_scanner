@@ -18,11 +18,11 @@ class StatusCard extends StatelessWidget {
         padding: const EdgeInsets.all(10.0),
         child: Text(
           text,
-          style: TextStyle(color: Colors.white),
+          style: const TextStyle(color: Colors.white),
         ),
       ),
       color: color,
-      shape: RoundedRectangleBorder(
+      shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(10)),
       ),
     );
