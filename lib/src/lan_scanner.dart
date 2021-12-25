@@ -38,7 +38,7 @@ class LanScanner {
   }) {
     // Check for possible errors in the configuration
     if (subnet == null || port == null) {
-      throw 'Subnet or port is not set yet';
+      throw 'Subnet or port have not ben provided';
     }
 
     if (port < 1 || port > 65535) {
@@ -124,7 +124,7 @@ class LanScanner {
 
     // Check for possible errors in the configuration
     if (subnet == null) {
-      throw 'Subnet is not set yet';
+      throw 'Subnet has not been provided';
     }
 
     if (firstIP > lastIP) {
