@@ -11,7 +11,7 @@ import 'package:lan_scanner/src/models/host_model.dart';
 
 /// A class to handle discovering devices in the local network
 ///
-/// Call [quickScan] or [preciseScan] on [LanScanner] instance
+/// Call [icmpScan] on [LanScanner] instance
 /// to get access to the stream.
 class LanScanner {
   /// Constructor of [LanScanner]
@@ -34,7 +34,7 @@ class LanScanner {
 
   /// This method is used to spawn isolate for range scan.
   /// It is not meant to be used directly.
-  /// It is used by [preciseScan] method.
+  /// It is used by [icmpScan] method.
   Future<void> _icmpRangeScan(List<Object> args) async {
     final subnet = args[0] as String;
     final firstIP = args[1] as int;
@@ -82,8 +82,6 @@ class LanScanner {
   /// This method uses ICMP to ping the network.
   /// It may be slow to complete the whole scan,
   /// so it is possible to provide a range to scan.
-  ///
-  /// [progressCallback] is scaled from 0.01 to 1
   Stream<HostModel> icmpScan(
     String? subnet, {
     int firstIP = 1,
