@@ -35,21 +35,21 @@ class LanScanner {
   /// This method is used to spawn isolate for range scan.
   /// It is not meant to be used directly.
   /// It is used by [preciseScan] method.
-  Future<List<HostModel>> _icmpRangeScan(List<Object> args) async {
+  Future<void> _icmpRangeScan(List<Object> args) async {
     final subnet = args[0] as String;
     final firstIP = args[1] as int;
     final lastIP = args[2] as int;
     final sendPort = args[3] as SendPort;
 
-    final List<HostModel> hosts = [];
-
     for (int currAddr = firstIP; currAddr <= lastIP; ++currAddr) {
       final hostToPing = '$subnet.$currAddr';
 
-      final ping = Ping(hostToPing, count: 1, timeout: 1);
+      final Ping pingRequest = Ping(hostToPing, count: 1, timeout: 1);
 
       try {
-        await for (final PingData pingData in ping.stream) {
+        await for (final PingData pingData in pingRequest.stream) {
+          // final int? responseTime = pingData.response?.time?.inMilliseconds;
+
           if (pingData.summary != null) {
             final PingSummary summary = pingData.summary!;
 
@@ -57,12 +57,10 @@ class LanScanner {
 
             if (received > 0) {
               final host = HostModel(ip: hostToPing);
-              hosts.add(host);
-
               sendPort.send(host.ip);
 
               if (debugLogging) {
-                print('Host detected: $hostToPing');
+                print('Host responded: $hostToPing');
               }
             } else {
               if (debugLogging) {
@@ -71,14 +69,12 @@ class LanScanner {
             }
           }
         }
-      } catch (err) {
+      } catch (e) {
         if (debugLogging) {
-          print(err);
+          print('Error: $e');
         }
       }
     }
-
-    return hosts;
   }
 
   /// Discovers network devices in the given [subnet].
@@ -115,9 +111,7 @@ class LanScanner {
     Future<void> startScan() async {
       _isScanInProgress = true;
 
-      for (int currIP = firstIP - 1;
-          currIP < 255;
-          currIP += rangeForEachIsolate) {
+      for (int currIP = firstIP; currIP < 255; currIP += rangeForEachIsolate) {
         final receivePort = ReceivePort();
         final isolateArgs = [
           subnet,
@@ -139,8 +133,6 @@ class LanScanner {
           _controller.add(HostModel(ip: msg as String));
         });
       }
-
-      _isScanInProgress = false;
     }
 
     void stopScan() {
@@ -149,6 +141,7 @@ class LanScanner {
       }
 
       _isScanInProgress = false;
+      _controller.close();
     }
 
     _controller = StreamController<HostModel>(
