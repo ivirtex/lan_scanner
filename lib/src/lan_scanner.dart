@@ -131,6 +131,8 @@ class LanScanner {
           _controller.add(HostModel(ip: msg as String));
         });
       }
+
+      _isScanInProgress = false;
     }
 
     void stopScan() {

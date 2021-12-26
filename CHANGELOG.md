@@ -1,5 +1,13 @@
 # Changelog
 
+## 3.0.0
+
+* The library now makes use of multi-threading to speed up the scanning process multiple times.
+* The quickScan() and preciseScan() no longer are available.
+* Changed name of DeviceModel to HostModel.
+* Updated docs.
+* Updated lint version.
+
 ## 2.0.1
 
 * Update pubspec.yaml in the example
