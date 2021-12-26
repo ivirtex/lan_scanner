@@ -1,9 +1,9 @@
 // Dart imports:
+// ignore_for_file: avoid_print
 import 'dart:async';
 import 'dart:isolate';
 
 // Package imports:
-import 'package:flutter/foundation.dart';
 import 'package:flutter_icmp_ping/flutter_icmp_ping.dart';
 
 // Project imports:
@@ -14,6 +14,16 @@ import 'package:lan_scanner/src/models/host_model.dart';
 /// Call [quickScan] or [preciseScan] on [LanScanner] instance
 /// to get access to the stream.
 class LanScanner {
+  /// Constructor of [LanScanner]
+  ///
+  /// Set [debugLogging] to true to enable printing
+  /// debug messages to the console.
+  LanScanner({this.debugLogging = false});
+
+  /// If true, the [icmpScan] method will print debug logs
+  /// (information about ping responses and errors)
+  bool debugLogging;
+
   /// State of the scanning action
   bool _isScanInProgress = false;
 
@@ -26,7 +36,7 @@ class LanScanner {
   /// It is not meant to be used directly.
   /// It is used by [preciseScan] method.
   Future<List<HostModel>> _icmpRangeScan(List<Object> args) async {
-    final subnet = args[0];
+    final subnet = args[0] as String;
     final firstIP = args[1] as int;
     final lastIP = args[2] as int;
     final sendPort = args[3] as SendPort;
@@ -48,16 +58,23 @@ class LanScanner {
             if (received > 0) {
               final host = HostModel(ip: hostToPing);
               hosts.add(host);
+
               sendPort.send(host.ip);
 
-              // print('Host detected: $hostToPing');
+              if (debugLogging) {
+                print('Host detected: $hostToPing');
+              }
             } else {
-              // print('Host not responding: $hostToPing');
+              if (debugLogging) {
+                print('Host not responding: $hostToPing');
+              }
             }
           }
         }
       } catch (err) {
-        print(err);
+        if (debugLogging) {
+          print(err);
+        }
       }
     }
 
@@ -78,6 +95,10 @@ class LanScanner {
     int scanSpeeed = 5,
   }) {
     late StreamController<HostModel> _controller;
+    final int isolateInstances = scanSpeeed;
+    final int rangeForEachIsolate = (lastIP - firstIP + 1) ~/ isolateInstances;
+    final List<Isolate> isolatesList = [];
+
     // Check for possible errors in the configuration
     if (subnet == null) {
       throw 'Subnet has not been provided';
@@ -93,13 +114,10 @@ class LanScanner {
 
     Future<void> startScan() async {
       _isScanInProgress = true;
-      int currIP = firstIP;
 
-      final int isolateInstances = scanSpeeed;
-      final int rangeForEachIsolate = (lastIP - firstIP) ~/ isolateInstances;
-      final List<Future<List<HostModel>>> isolatesList = [];
-
-      for (; currIP < 255; currIP += rangeForEachIsolate) {
+      for (int currIP = firstIP - 1;
+          currIP < 255;
+          currIP += rangeForEachIsolate) {
         final receivePort = ReceivePort();
         final isolateArgs = [
           subnet,
@@ -107,30 +125,28 @@ class LanScanner {
           currIP + rangeForEachIsolate,
           receivePort.sendPort,
         ];
-        final isolate = compute(
+        final isolate = await Isolate.spawn(
           _icmpRangeScan,
           isolateArgs,
-          debugLabel: 'Range: $currIP - ${currIP + rangeForEachIsolate}',
+          debugName: 'Range: $currIP - ${currIP + rangeForEachIsolate}',
         );
 
         isolatesList.add(isolate);
 
-        receivePort.listen((host) {
-          print("PORT: Host detected: $host");
-          _controller.add(HostModel(ip: host));
+        receivePort.listen((msg) {
+          // print('PORT: Host detected: $msg');
+
+          _controller.add(HostModel(ip: msg as String));
         });
       }
-
-      // Await for all isolates to complete their work
-      final List<List<HostModel>> completedIsolates =
-          await Future.wait(isolatesList);
 
       _isScanInProgress = false;
     }
 
     void stopScan() {
-      // TODO: implement stopScan
-      // currAddr = lastIP;
+      for (final isolate in isolatesList) {
+        isolate.kill(priority: Isolate.immediate);
+      }
 
       _isScanInProgress = false;
     }
