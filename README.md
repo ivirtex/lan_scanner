@@ -11,7 +11,7 @@ Note: This library is intended to be used on **[Class C](https://en.wikipedia.or
 Add the package to your pubspec.yaml:
 
 ```yaml
-lan_scanner: ^3.0.1
+lan_scanner: ^3.0.2
 ```
 
 Import the library:
@@ -39,6 +39,14 @@ var wifiIP = await (NetworkInfo().getWifiIP())
 var subnet = ipToSubnet(wifiIP);
 ```
 
-## Features and bugs
+## Features, bugs and contributions
+
+Feel free to contribute to this project.
 
 Please file feature requests and bugs at the [issue tracker](https://github.com/ivirtex/lan_scanner).
+If you fixed a bug or implemented feature by yourself, feel free to send a [pull request](https://github.com/ivirtex/lan_scanner/pulls).
+
+## Sponsoring
+
+I am working on my packages on my free time.
+If this package is helping you, please consider [buying me a coffee](https://www.buymeacoffee.com/ivirtex), so I can keep updating and maintaing this package.
