@@ -98,9 +98,9 @@ packages:
   lan_scanner:
     dependency: "direct main"
     description:
-      path: "C:\\Users\\hjozw\\OneDrive\\Dokumenty\\Development\\Flutter\\lan_scanner\\"
-      relative: false
-    source: path
+      name: lan_scanner
+      url: "https://pub.dartlang.org"
+    source: hosted
     version: "3.0.0"
   lints:
     dependency: transitive

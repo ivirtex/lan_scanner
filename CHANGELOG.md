@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.0.1
+
+* Fixed package description
+
 ## 3.0.0
 
 * The library now makes use of multi-threading to speed up the scanning process multiple times.
