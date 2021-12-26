@@ -29,6 +29,7 @@ class LanScanner {
     final subnet = args[0];
     final firstIP = args[1] as int;
     final lastIP = args[2] as int;
+    final sendPort = args[3] as SendPort;
 
     final List<HostModel> hosts = [];
 
@@ -47,12 +48,11 @@ class LanScanner {
             if (received > 0) {
               final host = HostModel(ip: hostToPing);
               hosts.add(host);
+              sendPort.send(host.ip);
 
-              // _controller.add(host);
-
-              print('Host detected: $hostToPing');
+              // print('Host detected: $hostToPing');
             } else {
-              print('Host not responding: $hostToPing');
+              // print('Host not responding: $hostToPing');
             }
           }
         }
@@ -92,34 +92,38 @@ class LanScanner {
     }
 
     Future<void> startScan() async {
-      int currIP = firstIP;
       _isScanInProgress = true;
+      int currIP = firstIP;
 
       final int isolateInstances = scanSpeeed;
       final int rangeForEachIsolate = (lastIP - firstIP) ~/ isolateInstances;
       final List<Future<List<HostModel>>> isolatesList = [];
 
       for (; currIP < 255; currIP += rangeForEachIsolate) {
+        final receivePort = ReceivePort();
+        final isolateArgs = [
+          subnet,
+          currIP,
+          currIP + rangeForEachIsolate,
+          receivePort.sendPort,
+        ];
         final isolate = compute(
           _icmpRangeScan,
-          [
-            subnet,
-            currIP,
-            currIP + rangeForEachIsolate,
-          ],
+          isolateArgs,
+          debugLabel: 'Range: $currIP - ${currIP + rangeForEachIsolate}',
         );
 
         isolatesList.add(isolate);
+
+        receivePort.listen((host) {
+          print("PORT: Host detected: $host");
+          _controller.add(HostModel(ip: host));
+        });
       }
 
       // Await for all isolates to complete their work
-      await Future.wait(isolatesList);
-
-      // Merge all results
-      final List<HostModel> hosts = [];
-      for (final isolate in isolatesList) {
-        hosts.addAll(await isolate);
-      }
+      final List<List<HostModel>> completedIsolates =
+          await Future.wait(isolatesList);
 
       _isScanInProgress = false;
     }
