@@ -7,13 +7,14 @@
 * Changed name of DeviceModel to HostModel.
 * Updated docs.
 * Updated lint version.
+* Updated example.
 
 ## 2.0.1
 
 * Update pubspec.yaml in the example
 * Update README.md
 * Update lint package to 1.6.0
-  
+
 ## 2.0.0
 
 * Changed name of DeviceAddress to DeviceModel

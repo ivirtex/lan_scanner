@@ -37,7 +37,9 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   Set<HostModel> hosts = <HostModel>{};
-  LanScanner scanner = LanScanner();
+  LanScanner scanner = LanScanner(debugLogging: true);
+
+  double scanSpeed = 5;
 
   @override
   Widget build(BuildContext context) {
@@ -45,20 +47,50 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: buildHostsListView(hosts),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Slider(
+                    value: scanSpeed,
+                    min: 0,
+                    max: 10,
+                    divisions: 10,
+                    onChanged: (value) {
+                      setState(() {
+                        scanSpeed = value;
+                      });
+                    },
+                  ),
+                ),
+                Text(scanSpeed.toStringAsFixed(1)),
+              ],
+            ),
+            buildHostsListView(hosts),
+          ],
+        ),
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           hosts.clear();
 
-          var stream = scanner.icmpScan(
+          final stream = scanner.icmpScan(
             '192.168.0',
+            scanSpeeed: scanSpeed.toInt(),
           );
 
-          stream.listen((HostModel device) {
-            setState(() {
-              hosts.add(device);
-            });
-          });
+          stream.listen(
+            (HostModel device) {
+              setState(() {
+                hosts.add(device);
+              });
+
+              print("Found host: ${device.ip}");
+            },
+          );
         },
         tooltip: 'Start scanning',
         child: const Icon(Icons.play_arrow),
