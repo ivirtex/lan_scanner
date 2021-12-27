@@ -2,12 +2,16 @@
 class HostModel {
   /// Constructor for a device address
   HostModel({
-    this.ip,
+    required this.ip,
+    required this.isReachable,
     this.errorCode,
   });
 
   /// The IP address of the device
-  final String? ip;
+  final String ip;
+
+  /// Reachability status of the device
+  final bool isReachable;
 
   /// The optional error code if the device didn't respond
   final int? errorCode;

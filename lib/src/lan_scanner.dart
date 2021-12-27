@@ -1,13 +1,14 @@
 // Dart imports:
-// ignore_for_file: avoid_print
 import 'dart:async';
 import 'dart:isolate';
 
 // Package imports:
 import 'package:flutter_icmp_ping/flutter_icmp_ping.dart';
+import 'package:lan_scanner/lan_scanner.dart';
 
 // Project imports:
 import 'package:lan_scanner/src/models/host_model.dart';
+import 'package:lan_scanner/src/models/progress_callback.dart';
 
 /// A class to handle discovering devices in the local network
 ///
@@ -46,6 +47,10 @@ class LanScanner {
 
       final Ping pingRequest = Ping(hostToPing, count: 1, timeout: 1);
 
+      final List msg = [
+        hostToPing,
+      ];
+
       try {
         await for (final PingData pingData in pingRequest.stream) {
           // final int? responseTime = pingData.response?.time?.inMilliseconds;
@@ -56,13 +61,16 @@ class LanScanner {
             final int received = summary.received!;
 
             if (received > 0) {
-              final host = HostModel(ip: hostToPing);
-              sendPort.send(host.ip);
+              msg.add(true);
+              sendPort.send(msg);
 
               if (debugLogging) {
                 print('Host responded: $hostToPing');
               }
             } else {
+              msg.add(false);
+              sendPort.send(msg);
+
               if (debugLogging) {
                 print('Host not responding: $hostToPing');
               }
@@ -87,11 +95,15 @@ class LanScanner {
     int firstIP = 1,
     int lastIP = 255,
     int scanSpeeed = 5,
+    ProgressCallback? progressCallback,
   }) {
     late StreamController<HostModel> _controller;
     final int isolateInstances = scanSpeeed;
-    final int rangeForEachIsolate = (lastIP - firstIP + 1) ~/ isolateInstances;
+    final int numOfHostsToPing = lastIP - firstIP + 1;
+    final int rangeForEachIsolate = numOfHostsToPing ~/ isolateInstances;
     final List<Isolate> isolatesList = [];
+
+    int numOfHostsPinged = 0;
 
     // Check for possible errors in the configuration
     if (subnet == null) {
@@ -111,24 +123,43 @@ class LanScanner {
 
       for (int currIP = firstIP; currIP < 255; currIP += rangeForEachIsolate) {
         final receivePort = ReceivePort();
+        final fromIP = currIP;
+        final toIP = currIP + rangeForEachIsolate - 1;
         final isolateArgs = [
           subnet,
-          currIP,
-          currIP + rangeForEachIsolate,
+          fromIP,
+          toIP,
           receivePort.sendPort,
         ];
+
         final isolate = await Isolate.spawn(
           _icmpRangeScan,
           isolateArgs,
-          debugName: 'Range: $currIP - ${currIP + rangeForEachIsolate}',
+          debugName: 'ScanThread: $fromIP - $toIP',
         );
-
         isolatesList.add(isolate);
 
         receivePort.listen((msg) {
-          // print('PORT: Host detected: $msg');
+          msg = msg as List;
 
-          _controller.add(HostModel(ip: msg as String));
+          // print('Message received: $msg');
+          final hostToPing = msg[0] as String;
+          final isReachable = msg[1] as bool;
+
+          numOfHostsPinged++;
+          final String progress =
+              ((numOfHostsPinged / numOfHostsToPing) * 100).toStringAsFixed(2);
+          progressCallback?.call(progress);
+          // print('Progress: $progress%');
+
+          if (isReachable) {
+            _controller.add(
+              HostModel(
+                ip: hostToPing,
+                isReachable: isReachable,
+              ),
+            );
+          }
         });
       }
 
@@ -137,6 +168,9 @@ class LanScanner {
 
     void stopScan() {
       for (final isolate in isolatesList) {
+        if (debugLogging) {
+          print('Killing thread: ${isolate.debugName}');
+        }
         isolate.kill(priority: Isolate.immediate);
       }
 
