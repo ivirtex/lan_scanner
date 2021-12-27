@@ -1,6 +1,7 @@
 // Dart imports:
 import 'dart:async';
 import 'dart:isolate';
+import 'dart:math';
 
 // Package imports:
 import 'package:flutter_icmp_ping/flutter_icmp_ping.dart';
@@ -131,7 +132,7 @@ class LanScanner {
       for (int currIP = firstIP; currIP < 255; currIP += rangeForEachIsolate) {
         final receivePort = ReceivePort();
         final fromIP = currIP;
-        final toIP = currIP + rangeForEachIsolate - 1;
+        final toIP = min(currIP + rangeForEachIsolate - 1, lastIP);
         final isolateArgs = [
           subnet,
           fromIP,
