@@ -40,12 +40,14 @@ class LanScanner {
     final subnet = args[0] as String;
     final firstIP = args[1] as int;
     final lastIP = args[2] as int;
-    final sendPort = args[3] as SendPort;
+    final timeout = args[3] as int;
+    final sendPort = args[4] as SendPort;
 
     for (int currAddr = firstIP; currAddr <= lastIP; ++currAddr) {
       final hostToPing = '$subnet.$currAddr';
 
-      final Ping pingRequest = Ping(hostToPing, count: 1, timeout: 1);
+      final Ping pingRequest =
+          Ping(hostToPing, count: 1, timeout: timeout.toDouble());
 
       final List msg = [
         hostToPing,
@@ -95,6 +97,7 @@ class LanScanner {
     int firstIP = 1,
     int lastIP = 255,
     int scanSpeeed = 5,
+    Duration timeout = const Duration(seconds: 1),
     ProgressCallback? progressCallback,
   }) {
     late StreamController<HostModel> _controller;
@@ -118,6 +121,10 @@ class LanScanner {
       throw 'Cannot begin scanning while the first one is still running';
     }
 
+    if (scanSpeeed < 1) {
+      throw 'Scan speed must be at least 1';
+    }
+
     Future<void> startScan() async {
       _isScanInProgress = true;
 
@@ -129,6 +136,7 @@ class LanScanner {
           subnet,
           fromIP,
           toIP,
+          timeout.inSeconds,
           receivePort.sendPort,
         ];
 
@@ -148,7 +156,7 @@ class LanScanner {
 
           numOfHostsPinged++;
           final String progress =
-              ((numOfHostsPinged / numOfHostsToPing) * 100).toStringAsFixed(2);
+              (numOfHostsPinged / numOfHostsToPing).toStringAsFixed(2);
           progressCallback?.call(progress);
           // print('Progress: $progress%');
 
@@ -168,9 +176,9 @@ class LanScanner {
 
     void stopScan() {
       for (final isolate in isolatesList) {
-        if (debugLogging) {
-          print('Killing thread: ${isolate.debugName}');
-        }
+        // if (debugLogging) {
+        //   print('Killing thread: ${isolate.debugName}');
+        // }
         isolate.kill(priority: Isolate.immediate);
       }
 
