@@ -3,12 +3,20 @@ import 'package:flutter/material.dart';
 
 // Package imports:
 import 'package:lan_scanner/lan_scanner.dart';
+import 'package:provider/provider.dart';
 
 // Project imports:
-import 'list_builder.dart';
+import 'package:lan_scanner_example/models/progress_model.dart';
+import 'components/list_builder.dart';
 
 void main() {
-  runApp(const MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => ProgressModel(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -39,7 +47,13 @@ class _MyHomePageState extends State<MyHomePage> {
   Set<HostModel> hosts = <HostModel>{};
   LanScanner scanner = LanScanner(debugLogging: true);
 
-  double scanSpeed = 5;
+  double scanSpeed = 10;
+  bool isScanning = false;
+
+  void update() {
+    // TODO: not updating for some reason idk i will fix this later i wanna go to sleep now
+    context.read<ProgressModel>().changeIsDoneStateTo(true);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,51 +63,109 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Slider(
-                    value: scanSpeed,
-                    min: 0,
-                    max: 10,
-                    divisions: 10,
-                    onChanged: (value) {
-                      setState(() {
-                        scanSpeed = value;
-                      });
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Selector<ProgressModel, double>(
+                selector: (context, model) => model.progress,
+                builder: (context, double progress, child) {
+                  return Row(
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          child: LinearProgressIndicator(value: progress),
+                        ),
+                      ),
+                      Text('$progress'),
+                    ],
+                  );
+                },
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: Slider(
+                      value: scanSpeed,
+                      min: 1,
+                      max: 20,
+                      divisions: 20,
+                      onChanged: (value) {
+                        setState(() {
+                          scanSpeed = value;
+                        });
+                      },
+                    ),
+                  ),
+                  Text(scanSpeed.toStringAsFixed(1)),
+                ],
+              ),
+              Visibility(
+                visible: isScanning,
+                child: StreamBuilder(
+                  stream: scanner.icmpScan(
+                    '192.168.0',
+                    scanSpeeed: scanSpeed.toInt(),
+                    timeout: const Duration(seconds: 1),
+                    progressCallback: (String progress) {
+                      // print('Progress: $progress %');
+
+                      context
+                          .read<ProgressModel>()
+                          .setProgress(double.parse(progress));
                     },
                   ),
+                  builder: (
+                    BuildContext context,
+                    AsyncSnapshot<HostModel> snapshot,
+                  ) {
+                    if (snapshot.hasData) {
+                      hosts.add(snapshot.data!);
+                    }
+
+                    switch (snapshot.connectionState) {
+                      case ConnectionState.none:
+                        return buildHostsListView(hosts);
+                      case ConnectionState.waiting:
+                        return const Text("Waiting for data...");
+                      case ConnectionState.active:
+                        return buildHostsListView(hosts);
+                      case ConnectionState.done:
+                        WidgetsBinding.instance!
+                            .addPostFrameCallback((_) => update);
+
+                        if (snapshot.hasError) {
+                          return Text("Error: ${snapshot.error}");
+                        } else {
+                          return buildHostsListView(hosts);
+                        }
+                      default:
+                        return const Text("Unknown state");
+                    }
+                  },
                 ),
-                Text(scanSpeed.toStringAsFixed(1)),
-              ],
-            ),
-            buildHostsListView(hosts),
-          ],
+              )
+            ],
+          ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          hosts.clear();
+      floatingActionButton: Consumer<ProgressModel>(
+        builder: (context, model, child) {
+          return FloatingActionButton(
+            onPressed: () {
+              model.changeIsDoneStateTo(!model.isDoneScanning);
+              hosts.clear();
 
-          final stream = scanner.icmpScan(
-            '192.168.0',
-            scanSpeeed: scanSpeed.toInt(),
-          );
-
-          stream.listen(
-            (HostModel device) {
               setState(() {
-                hosts.add(device);
+                isScanning = !isScanning;
               });
-
-              print("Found host: ${device.ip}");
             },
+            tooltip: 'Start scanning',
+            child: model.isDoneScanning
+                ? const Icon(Icons.play_arrow)
+                : const Icon(Icons.stop),
           );
         },
-        tooltip: 'Start scanning',
-        child: const Icon(Icons.play_arrow),
       ),
     );
   }

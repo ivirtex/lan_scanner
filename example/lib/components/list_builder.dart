@@ -11,6 +11,7 @@ Padding buildHostsListView(Set<HostModel> hosts) {
   return Padding(
     padding: const EdgeInsets.symmetric(horizontal: 5),
     child: ListView.builder(
+      physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       itemCount: hosts.length,
       itemBuilder: (context, index) {
@@ -21,11 +22,12 @@ Padding buildHostsListView(Set<HostModel> hosts) {
             borderRadius: BorderRadius.all(Radius.circular(10)),
           ),
           child: ListTile(
-              leading: const StatusCard(
-                color: Colors.greenAccent,
-                text: "Online",
-              ),
-              title: Text(currData.ip ?? "N/A")),
+            leading: const StatusCard(
+              color: Colors.greenAccent,
+              text: "Online",
+            ),
+            title: Text(currData.ip),
+          ),
         );
       },
     ),

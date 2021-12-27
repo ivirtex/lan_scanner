@@ -57,6 +57,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.4"
+  dart_ping:
+    dependency: transitive
+    description:
+      name: dart_ping
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "6.1.1"
+  dart_ping_ios:
+    dependency: transitive
+    description:
+      name: dart_ping_ios
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0"
   fake_async:
     dependency: transitive
     description:
@@ -98,10 +112,10 @@ packages:
   lan_scanner:
     dependency: "direct main"
     description:
-      name: lan_scanner
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "3.0.0"
+      path: "C:\\Users\\hjozw\\OneDrive\\Dokumenty\\Development\\Flutter\\lan_scanner"
+      relative: false
+    source: path
+    version: "3.0.2"
   lints:
     dependency: transitive
     description:
@@ -123,6 +137,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.7.0"
+  nested:
+    dependency: transitive
+    description:
+      name: nested
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0"
   path:
     dependency: transitive
     description:
@@ -130,6 +151,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.8.0"
+  provider:
+    dependency: "direct main"
+    description:
+      name: provider
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "6.0.1"
   sky_engine:
     dependency: transitive
     description: flutter
