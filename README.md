@@ -11,7 +11,7 @@ Note: This library is intended to be used on **[Class C](https://en.wikipedia.or
 Add the package to your pubspec.yaml:
 
 ```yaml
-lan_scanner: ^3.1.0
+lan_scanner: ^3.1.1
 ```
 
 Import the library:

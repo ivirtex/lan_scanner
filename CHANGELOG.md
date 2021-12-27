@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.1.1
+
+* Updated export file to include ProgressCallback class.
+
 ## 3.1.0
 
 * Switched to a more reliable ping plugin.
