@@ -104,7 +104,8 @@ class LanScanner {
     late StreamController<HostModel> _controller;
     final int isolateInstances = scanSpeeed;
     final int numOfHostsToPing = lastIP - firstIP + 1;
-    final int rangeForEachIsolate = numOfHostsToPing ~/ isolateInstances;
+    final int rangeForEachIsolate =
+        (numOfHostsToPing / isolateInstances).round();
     final List<Isolate> isolatesList = [];
 
     int numOfHostsPinged = 0;
@@ -133,7 +134,7 @@ class LanScanner {
       for (int currIP = firstIP; currIP < 255; currIP += rangeForEachIsolate) {
         final receivePort = ReceivePort();
         final fromIP = currIP;
-        final toIP = max(min(currIP + rangeForEachIsolate - 1, lastIP), lastIP);
+        final toIP = (currIP + rangeForEachIsolate - 1).clamp(firstIP, lastIP);
         final isolateArgs = [
           subnet,
           fromIP,
@@ -160,7 +161,12 @@ class LanScanner {
           final String progress =
               (numOfHostsPinged / numOfHostsToPing).toStringAsFixed(2);
           progressCallback?.call(progress);
-          // print('Progress: $progress%');
+
+          if (double.parse(progress) == double.parse('1.0')) {
+            print('Scan finished');
+            _isScanInProgress = false;
+            _controller.close();
+          }
 
           if (isReachable) {
             _controller.add(
@@ -172,8 +178,6 @@ class LanScanner {
           }
         });
       }
-
-      _isScanInProgress = false;
     }
 
     void stopScan() {
