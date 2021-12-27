@@ -10,7 +10,8 @@ dependencies:
   flutter:
     sdk: flutter
 
-  flutter_icmp_ping: ^3.0.2
+  dart_ping: ^6.1.1
+  dart_ping_ios: ^1.0.0
 
 dev_dependencies:
   flutter_test:

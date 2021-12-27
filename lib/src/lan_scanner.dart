@@ -4,7 +4,8 @@ import 'dart:isolate';
 import 'dart:math';
 
 // Package imports:
-import 'package:flutter_icmp_ping/flutter_icmp_ping.dart';
+import 'package:dart_ping/dart_ping.dart';
+import 'package:dart_ping_ios/dart_ping_ios.dart';
 import 'package:lan_scanner/lan_scanner.dart';
 
 // Project imports:
@@ -47,8 +48,7 @@ class LanScanner {
     for (int currAddr = firstIP; currAddr <= lastIP; ++currAddr) {
       final hostToPing = '$subnet.$currAddr';
 
-      final Ping pingRequest =
-          Ping(hostToPing, count: 1, timeout: timeout.toDouble());
+      final Ping pingRequest = Ping(hostToPing, count: 1, timeout: timeout);
 
       final List msg = [
         hostToPing,
@@ -61,7 +61,7 @@ class LanScanner {
           if (pingData.summary != null) {
             final PingSummary summary = pingData.summary!;
 
-            final int received = summary.received!;
+            final int received = summary.received;
 
             if (received > 0) {
               msg.add(true);
@@ -127,12 +127,13 @@ class LanScanner {
     }
 
     Future<void> startScan() async {
+      DartPingIOS.register();
       _isScanInProgress = true;
 
       for (int currIP = firstIP; currIP < 255; currIP += rangeForEachIsolate) {
         final receivePort = ReceivePort();
         final fromIP = currIP;
-        final toIP = min(currIP + rangeForEachIsolate - 1, lastIP);
+        final toIP = max(min(currIP + rangeForEachIsolate - 1, lastIP), lastIP);
         final isolateArgs = [
           subnet,
           fromIP,
