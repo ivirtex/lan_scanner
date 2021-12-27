@@ -1,12 +1,20 @@
 # Changelog
 
+## 3.1.0
+
+* Switched to a more reliable ping plugin.
+* Added timeout argument to icmpScan().
+* Increased concurrent scanning threads count to 10.
+* Fixed a bug that caused the stream not to close.
+* Updated example.
+
 ## 3.0.2
 
-* Updated README.md
+* Updated README.md.
 
 ## 3.0.1
 
-* Fixed package description
+* Fixed package description.
 
 ## 3.0.0
 
@@ -19,9 +27,9 @@
 
 ## 2.0.1
 
-* Update pubspec.yaml in the example
-* Update README.md
-* Update lint package to 1.6.0
+* Updated pubspec.yaml in the example
+* Updated README.md
+* Updated lint package to 1.6.0
 
 ## 2.0.0
 

@@ -1,14 +1,15 @@
 // Dart imports:
+// ignore_for_file: avoid_print
+
 import 'dart:async';
 import 'dart:isolate';
-import 'dart:math';
 
 // Package imports:
 import 'package:dart_ping/dart_ping.dart';
 import 'package:dart_ping_ios/dart_ping_ios.dart';
-import 'package:lan_scanner/lan_scanner.dart';
 
 // Project imports:
+import 'package:lan_scanner/lan_scanner.dart';
 import 'package:lan_scanner/src/models/host_model.dart';
 import 'package:lan_scanner/src/models/progress_callback.dart';
 
@@ -97,7 +98,7 @@ class LanScanner {
     String? subnet, {
     int firstIP = 1,
     int lastIP = 255,
-    int scanSpeeed = 5,
+    int scanSpeeed = 10,
     Duration timeout = const Duration(seconds: 1),
     ProgressCallback? progressCallback,
   }) {
@@ -163,7 +164,9 @@ class LanScanner {
           progressCallback?.call(progress);
 
           if (double.parse(progress) == double.parse('1.0')) {
-            print('Scan finished');
+            if (debugLogging) {
+              print('Scan finished');
+            }
             _isScanInProgress = false;
             _controller.close();
           }
