@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.2.0
+
+* ProgressCallback now uses double instead of string.
+  
 ## 3.1.1
 
 * Updated export file to include ProgressCallback class.
