@@ -1,6 +1,6 @@
 name: lan_scanner
 description: A package that allows discovering network devices via multi-threaded ICMP pings.
-version: 3.1.1
+version: 3.2.0
 homepage: https://github.com/ivirtex/lan_scanner
 
 environment:
@@ -18,6 +18,6 @@ dev_dependencies:
     sdk: flutter
 
   import_sorter: ^4.6.0
-  lint: ^1.8.1
+  lint: ^1.8.2
 
 flutter:

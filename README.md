@@ -11,7 +11,7 @@ Note: This library is intended to be used on **[Class C](https://en.wikipedia.or
 Add the package to your pubspec.yaml:
 
 ```yaml
-lan_scanner: ^3.1.1
+lan_scanner: ^3.2.0
 ```
 
 Import the library:
@@ -24,7 +24,9 @@ Create an instance of the class and call
 [`icmpScan()`](https://pub.dev/documentation/lan_scanner/latest/lan_scanner/LanScanner/icmpScan.html) on it:
 
 ```dart
-final stream = scanner.icmpScan('192.168.0');
+final stream = scanner.icmpScan('192.168.0', progressCallback: (progress) {
+    print('Progress: $progress');
+});
 
 stream.listen((HostModel device) {
     print("Found host: ${device.ip}");

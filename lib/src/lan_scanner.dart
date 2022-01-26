@@ -1,6 +1,6 @@
-// Dart imports:
 // ignore_for_file: avoid_print
 
+// Dart imports:
 import 'dart:async';
 import 'dart:isolate';
 
@@ -10,8 +10,6 @@ import 'package:dart_ping_ios/dart_ping_ios.dart';
 
 // Project imports:
 import 'package:lan_scanner/lan_scanner.dart';
-import 'package:lan_scanner/src/models/host_model.dart';
-import 'package:lan_scanner/src/models/progress_callback.dart';
 
 /// A class to handle discovering devices in the local network
 ///
@@ -161,7 +159,7 @@ class LanScanner {
           numOfHostsPinged++;
           final String progress =
               (numOfHostsPinged / numOfHostsToPing).toStringAsFixed(2);
-          progressCallback?.call(progress);
+          progressCallback?.call(double.parse(progress));
 
           if (double.parse(progress) == double.parse('1.0')) {
             if (debugLogging) {
