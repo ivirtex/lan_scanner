@@ -1,6 +1,6 @@
 # lan_scanner
 
-[Dart](https://dart.dev) / [Flutter](https://flutter.dev) package that allows discovering network devices in local network ([LAN](https://en.wikipedia.org/wiki/Local_area_network)).
+[Dart](https://dart.dev) / [Flutter](https://flutter.dev) package that allows discovering network devices in local network ([LAN](https://en.wikipedia.org/wiki/Local_area_network)) via multi-threaded ICMP pings.
 
 Note: This library is intended to be used on **[Class C](https://en.wikipedia.org/wiki/Classful_network#Classful_addressing_definition)** networks.
 
@@ -11,7 +11,7 @@ Note: This library is intended to be used on **[Class C](https://en.wikipedia.or
 Add the package to your pubspec.yaml:
 
 ```yaml
-lan_scanner: ^3.2.0
+lan_scanner: ^3.3.0
 ```
 
 Import the library:
@@ -36,7 +36,7 @@ stream.listen((HostModel device) {
 If you don't know what is your subnet, you can use [network_info_plus](https://pub.dev/packages/network_info_plus) and then `ipToSubnet()` function.
 
 ```dart
-var wifiIP = await (NetworkInfo().getWifiIP())
+var wifiIP = await NetworkInfo().getWifiIP()
 
 var subnet = ipToSubnet(wifiIP);
 ```
@@ -50,5 +50,5 @@ If you fixed a bug or implemented feature by yourself, feel free to send a [pull
 
 ## Sponsoring
 
-I am working on my packages on my free time.
+I am working on my packages on my free time.  
 If this package is helping you, please consider [buying me a coffee](https://www.buymeacoffee.com/ivirtex), so I can keep updating and maintaing this package.

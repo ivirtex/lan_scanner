@@ -92,16 +92,18 @@ class LanScanner {
   /// This method uses ICMP to ping the network.
   /// It may be slow to complete the whole scan,
   /// so it is possible to provide a range to scan.
+  ///
+  /// [scanThreads] determines the number of threads to spawn for the scan.
   Stream<HostModel> icmpScan(
-    String? subnet, {
+    String subnet, {
     int firstIP = 1,
     int lastIP = 255,
-    int scanSpeeed = 10,
+    int scanThreads = 10,
     Duration timeout = const Duration(seconds: 1),
     ProgressCallback? progressCallback,
   }) {
     late StreamController<HostModel> _controller;
-    final int isolateInstances = scanSpeeed;
+    final int isolateInstances = scanThreads;
     final int numOfHostsToPing = lastIP - firstIP + 1;
     final int rangeForEachIsolate =
         (numOfHostsToPing / isolateInstances).round();
@@ -110,10 +112,6 @@ class LanScanner {
     int numOfHostsPinged = 0;
 
     // Check for possible errors in the configuration
-    if (subnet == null) {
-      throw 'Subnet has not been provided';
-    }
-
     if (firstIP > lastIP) {
       throw "firstIP can't be larger than lastIP";
     }
@@ -122,7 +120,7 @@ class LanScanner {
       throw 'Cannot begin scanning while the first one is still running';
     }
 
-    if (scanSpeeed < 1) {
+    if (scanThreads < 1) {
       throw 'Scan speed must be at least 1';
     }
 

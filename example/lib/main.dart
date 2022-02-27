@@ -105,7 +105,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: StreamBuilder(
                   stream: scanner.icmpScan(
                     '192.168.0',
-                    scanSpeeed: scanSpeed.toInt(),
+                    scanThreads: scanSpeed.toInt(),
                     timeout: const Duration(seconds: 1),
                     progressCallback: (String progress) {
                       // print('Progress: $progress %');
