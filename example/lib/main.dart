@@ -1,22 +1,12 @@
-// Flutter imports:
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-
-// Package imports:
 import 'package:lan_scanner/lan_scanner.dart';
-import 'package:provider/provider.dart';
-
-// Project imports:
-import 'package:lan_scanner_example/models/progress_model.dart';
-import 'components/list_builder.dart';
+import 'package:lan_scanner_ios/lan_scanner_ios.dart';
 
 void main() {
-  WidgetsFlutterBinding.ensureInitialized();
-  runApp(
-    ChangeNotifierProvider(
-      create: (context) => ProgressModel(),
-      child: const MyApp(),
-    ),
-  );
+  LanScannerIOS.registerForIOS();
+
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -24,148 +14,68 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'LAN Scanner Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const MyHomePage(title: 'LAN Scanner Demo'),
+    return const MaterialApp(
+      title: 'lan_scanner example',
+      home: MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
-
-  final String title;
+  const MyHomePage({Key? key}) : super(key: key);
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  Set<HostModel> hosts = <HostModel>{};
-  LanScanner scanner = LanScanner(debugLogging: true);
-
-  double scanSpeed = 10;
-  bool isScanning = false;
-
-  void update() {
-    // TODO: not updating for some reason idk i will fix this later i wanna go to sleep now
-    context.read<ProgressModel>().changeIsDoneStateTo(true);
-  }
+  final List<HostModel> _hosts = <HostModel>[];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: const Text('lan_scanner example'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Selector<ProgressModel, double>(
-                selector: (context, model) => model.progress,
-                builder: (context, double progress, child) {
-                  return Row(
-                    children: [
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: LinearProgressIndicator(value: progress),
-                        ),
-                      ),
-                      Text('$progress'),
-                    ],
-                  );
-                },
-              ),
-              Row(
-                children: [
-                  Expanded(
-                    child: Slider(
-                      value: scanSpeed,
-                      min: 1,
-                      max: 20,
-                      divisions: 20,
-                      onChanged: (value) {
-                        setState(() {
-                          scanSpeed = value;
-                        });
-                      },
-                    ),
-                  ),
-                  Text(scanSpeed.toStringAsFixed(1)),
-                ],
-              ),
-              Visibility(
-                visible: isScanning,
-                child: StreamBuilder(
-                  stream: scanner.icmpScan(
-                    '192.168.0',
-                    scanThreads: scanSpeed.toInt(),
-                    timeout: const Duration(seconds: 1),
-                    progressCallback: (String progress) {
-                      // print('Progress: $progress %');
+      body: SafeArea(
+        child: Column(
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                final scanner = LanScanner();
 
-                      context
-                          .read<ProgressModel>()
-                          .setProgress(double.parse(progress));
-                    },
-                  ),
-                  builder: (
-                    BuildContext context,
-                    AsyncSnapshot<HostModel> snapshot,
-                  ) {
-                    if (snapshot.hasData) {
-                      hosts.add(snapshot.data!);
-                    }
-
-                    switch (snapshot.connectionState) {
-                      case ConnectionState.none:
-                        return buildHostsListView(hosts);
-                      case ConnectionState.waiting:
-                        return const Text("Waiting for data...");
-                      case ConnectionState.active:
-                        return buildHostsListView(hosts);
-                      case ConnectionState.done:
-                        WidgetsBinding.instance!
-                            .addPostFrameCallback((_) => update);
-
-                        if (snapshot.hasError) {
-                          return Text("Error: ${snapshot.error}");
-                        } else {
-                          return buildHostsListView(hosts);
-                        }
-                      default:
-                        return const Text("Unknown state");
+                final stream = scanner.icmpScan(
+                  '192.168.0',
+                  progressCallback: (progress) {
+                    if (kDebugMode) {
+                      print('progress: $progress');
                     }
                   },
-                ),
-              )
-            ],
-          ),
-        ),
-      ),
-      floatingActionButton: Consumer<ProgressModel>(
-        builder: (context, model, child) {
-          return FloatingActionButton(
-            onPressed: () {
-              model.changeIsDoneStateTo(!model.isDoneScanning);
-              hosts.clear();
+                );
 
-              setState(() {
-                isScanning = !isScanning;
-              });
-            },
-            tooltip: 'Start scanning',
-            child: model.isDoneScanning
-                ? const Icon(Icons.play_arrow)
-                : const Icon(Icons.stop),
-          );
-        },
+                stream.listen((HostModel host) {
+                  setState(() {
+                    _hosts.add(host);
+                  });
+                });
+              },
+              child: const Text('Scan'),
+            ),
+            ListView.builder(
+              shrinkWrap: true,
+              itemBuilder: (context, index) {
+                final host = _hosts[index];
+
+                return Card(
+                  child: ListTile(
+                    title: Text(host.ip),
+                  ),
+                );
+              },
+              itemCount: _hosts.length,
+            ),
+          ],
+        ),
       ),
     );
   }

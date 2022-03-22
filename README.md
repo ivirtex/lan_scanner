@@ -24,6 +24,8 @@ Create an instance of the class and call
 [`icmpScan()`](https://pub.dev/documentation/lan_scanner/latest/lan_scanner/LanScanner/icmpScan.html) on it:
 
 ```dart
+final scanner = LanScanner();
+
 final stream = scanner.icmpScan('192.168.0', progressCallback: (progress) {
     print('Progress: $progress');
 });
@@ -51,4 +53,4 @@ If you fixed a bug or implemented feature by yourself, feel free to send a [pull
 ## Sponsoring
 
 I am working on my packages on my free time.  
-If this package is helping you, please consider [buying me a coffee](https://www.buymeacoffee.com/ivirtex), so I can keep updating and maintaing this package.
+If this package is helping you, please consider [buying me a coffee](ko-fi.com/ivirtex), so I can keep updating and maintaing this package.

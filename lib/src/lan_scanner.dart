@@ -6,7 +6,6 @@ import 'dart:isolate';
 
 // Package imports:
 import 'package:dart_ping/dart_ping.dart';
-import 'package:dart_ping_ios/dart_ping_ios.dart';
 
 // Project imports:
 import 'package:lan_scanner/lan_scanner.dart';
@@ -94,6 +93,7 @@ class LanScanner {
   /// so it is possible to provide a range to scan.
   ///
   /// [scanThreads] determines the number of threads to spawn for the scan.
+  /// Avoid using high numbers of threads, as it may cause high memory usage.
   Stream<HostModel> icmpScan(
     String subnet, {
     int firstIP = 1,
@@ -125,7 +125,6 @@ class LanScanner {
     }
 
     Future<void> startScan() async {
-      DartPingIOS.register();
       _isScanInProgress = true;
 
       for (int currIP = firstIP; currIP < 255; currIP += rangeForEachIsolate) {
@@ -159,7 +158,7 @@ class LanScanner {
               (numOfHostsPinged / numOfHostsToPing).toStringAsFixed(2);
           progressCallback?.call(double.parse(progress));
 
-          if (double.parse(progress) == double.parse('1.0')) {
+          if (progress == '1.0') {
             if (debugLogging) {
               print('Scan finished');
             }
