@@ -11,6 +11,9 @@ linter:
     # Good packages document everything
     public_member_api_docs: true
 
+    # We use custom sorting for the imports
+    directives_ordering: false
+
 dart_code_metrics:
   anti-patterns:
     - long-method
