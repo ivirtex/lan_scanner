@@ -102,13 +102,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.3.0"
-  lan_scanner_ios:
-    dependency: "direct main"
-    description:
-      path: "C:\\Users\\hjozw\\OneDrive\\Dokumenty\\Development\\Flutter\\lan_scanner\\lan_scanner_ios"
-      relative: false
-    source: path
-    version: "0.0.1"
   lints:
     dependency: transitive
     description:

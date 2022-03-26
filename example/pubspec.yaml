@@ -35,8 +35,6 @@ dependencies:
   cupertino_icons: ^1.0.2
 
   lan_scanner:
-  lan_scanner_ios:
-    path: C:\Users\hjozw\OneDrive\Dokumenty\Development\Flutter\lan_scanner\lan_scanner_ios
 
 dev_dependencies:
   flutter_test:

@@ -1,11 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:lan_scanner/lan_scanner.dart';
-import 'package:lan_scanner_ios/lan_scanner_ios.dart';
 
 void main() {
-  LanScannerIOS.registerForIOS();
-
   runApp(const MyApp());
 }
 

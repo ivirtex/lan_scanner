@@ -11,8 +11,6 @@ linter:
     # Good packages document everything
     public_member_api_docs: true
 
-    avoid_classes_with_only_static_members: false
-
 dart_code_metrics:
   anti-patterns:
     - long-method
