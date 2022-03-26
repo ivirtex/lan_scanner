@@ -4,6 +4,15 @@
 
 Note: This library is intended to be used on **[Class C](https://en.wikipedia.org/wiki/Classful_network#Classful_addressing_definition)** networks.
 
+**Warning:**  
+iOS platform is currently not supported.
+This is due to a compatibility issue with the underlying ping library.  
+Blocking factors:  
+[Issue #1](https://github.com/point-source/dart_ping/issues/6)  
+[Issue #2](https://github.com/dart-lang/sdk/issues/37022)
+
+Due to my exams, I won't have much time to work on this for the next 2 to 3 months, but if you have any suggestions on how to make a workaround for iOS, please let me know.
+
 [pub.dev page](https://pub.dev/packages/lan_scanner) | [API reference](https://pub.dev/documentation/lan_scanner/latest/)
 
 ## Getting Started
@@ -48,10 +57,10 @@ var subnet = ipToCSubnet(wifiIP);
 Feel free to contribute to this project.
 
 Please file feature requests and bugs at the [issue tracker](https://github.com/ivirtex/lan_scanner).
-If you fixed a bug or implemented feature by yourself, feel free to send a [pull request](https://github.com/ivirtex/lan_scanner/pulls).
+If you fixed a bug or implemented a feature by yourself, feel free to send a [pull request](https://github.com/ivirtex/lan_scanner/pulls).
 
 ## Sponsoring
 
-I am working on my packages on my free time.
+I am working on my packages in my free time.
 
-If this package is helping you, please consider [buying me a coffee](ko-fi.com/ivirtex), so I can keep updating and maintaing this package.
+If this package is helping you, please consider [buying me a coffee](ko-fi.com/ivirtex), so I can keep updating and maintaining this package.

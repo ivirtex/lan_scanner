@@ -1,9 +1,10 @@
 # Changelog
 
-## 3.3.1
+## 3.4.0
 
-- Renamed `ipToSubnet()` to `ipToCSubnet()`
-- Updated documentation
+- Renamed `ipToSubnet()` to `ipToCSubnet()`.
+- Added new example.
+- Updated documentation.
 
 ## 3.3.0
 

@@ -35,43 +35,46 @@ class _MyHomePageState extends State<MyHomePage> {
         title: const Text('lan_scanner example'),
       ),
       body: SafeArea(
-        child: Column(
-          children: [
-            ElevatedButton(
-              onPressed: () {
-                final scanner = LanScanner();
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  final scanner = LanScanner(debugLogging: true);
 
-                final stream = scanner.icmpScan(
-                  '192.168.0',
-                  progressCallback: (progress) {
-                    if (kDebugMode) {
-                      print('progress: $progress');
-                    }
-                  },
-                );
+                  final stream = scanner.icmpScan(
+                    '192.168.0',
+                    progressCallback: (progress) {
+                      if (kDebugMode) {
+                        print('progress: $progress');
+                      }
+                    },
+                  );
 
-                stream.listen((HostModel host) {
-                  setState(() {
-                    _hosts.add(host);
+                  stream.listen((HostModel host) {
+                    setState(() {
+                      _hosts.add(host);
+                    });
                   });
-                });
-              },
-              child: const Text('Scan'),
-            ),
-            ListView.builder(
-              shrinkWrap: true,
-              itemBuilder: (context, index) {
-                final host = _hosts[index];
+                },
+                child: const Text('Scan'),
+              ),
+              ListView.builder(
+                physics: const NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                itemBuilder: (context, index) {
+                  final host = _hosts[index];
 
-                return Card(
-                  child: ListTile(
-                    title: Text(host.ip),
-                  ),
-                );
-              },
-              itemCount: _hosts.length,
-            ),
-          ],
+                  return Card(
+                    child: ListTile(
+                      title: Text(host.ip),
+                    ),
+                  );
+                },
+                itemCount: _hosts.length,
+              ),
+            ],
+          ),
         ),
       ),
     );

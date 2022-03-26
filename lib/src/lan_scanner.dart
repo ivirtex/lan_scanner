@@ -45,8 +45,22 @@ class LanScanner {
 
     for (int currAddr = firstIP; currAddr <= lastIP; ++currAddr) {
       final hostToPing = '$subnet.$currAddr';
+      final Ping pingRequest;
 
-      final Ping pingRequest = Ping(hostToPing, count: 1, timeout: timeout);
+      try {
+        pingRequest = Ping(hostToPing, count: 1, timeout: timeout);
+      } catch (exc) {
+        if (exc is UnimplementedError &&
+            (exc.message?.contains('iOS') ?? false)) {
+          print(
+            'iOS is currently not supported, please see the readme at https://pub.dev/packages/lan_scanner',
+          );
+        } else {
+          rethrow;
+        }
+
+        return;
+      }
 
       final List msg = [
         hostToPing,
@@ -121,7 +135,7 @@ class LanScanner {
     }
 
     if (scanThreads < 1) {
-      throw 'Scan speed must be at least 1';
+      throw 'Scan threads must be at least 1';
     }
 
     Future<void> startScan() async {
