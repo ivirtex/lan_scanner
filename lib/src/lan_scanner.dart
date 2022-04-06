@@ -172,7 +172,7 @@ class LanScanner {
               (numOfHostsPinged / numOfHostsToPing).toStringAsFixed(2);
           progressCallback?.call(double.parse(progress));
 
-          if (progress == '1.0') {
+          if (progress == '1.00') {
             if (debugLogging) {
               print('Scan finished');
             }

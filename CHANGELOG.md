@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.4.1
+
+- Fixed a bug that caused the stream not to close.
+
 ## 3.4.0
 
 - Renamed `ipToSubnet()` to `ipToCSubnet()`.
