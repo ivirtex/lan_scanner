@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.5.0
+
+- Fixed new linter warnings,
+- Bumped `dart_ping` to 7.0.0
+- Updated documentation to mention required permission ([Thanks, DamnDaniel-98](https://github.com/ivirtex/lan_scanner/issues/4)).
+
 ## 3.4.1
 
 - Fixed a bug that caused the stream not to close.

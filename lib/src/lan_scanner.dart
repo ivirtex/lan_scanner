@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_print
+// ignore_for_file: avoid_print, omit_local_variable_types
 
 // Dart imports:
 import 'dart:async';
@@ -43,7 +43,7 @@ class LanScanner {
     final timeout = args[3] as int;
     final sendPort = args[4] as SendPort;
 
-    for (int currAddr = firstIP; currAddr <= lastIP; ++currAddr) {
+    for (var currAddr = firstIP; currAddr <= lastIP; ++currAddr) {
       final hostToPing = '$subnet.$currAddr';
       final Ping pingRequest;
 
@@ -62,7 +62,7 @@ class LanScanner {
         return;
       }
 
-      final List msg = [
+      final List<dynamic> msg = [
         hostToPing,
       ];
 
@@ -127,15 +127,17 @@ class LanScanner {
 
     // Check for possible errors in the configuration
     if (firstIP > lastIP) {
-      throw "firstIP can't be larger than lastIP";
+      throw Exception("firstIP can't be larger than lastIP");
     }
 
     if (_isScanInProgress) {
-      throw 'Cannot begin scanning while the first one is still running';
+      throw Exception(
+        'Cannot begin scanning while the first one is still running',
+      );
     }
 
     if (scanThreads < 1) {
-      throw 'Scan threads must be at least 1';
+      throw Exception('Scan threads must be at least 1');
     }
 
     Future<void> startScan() async {
@@ -163,7 +165,6 @@ class LanScanner {
         receivePort.listen((msg) {
           msg = msg as List;
 
-          // print('Message received: $msg');
           final hostToPing = msg[0] as String;
           final isReachable = msg[1] as bool;
 
@@ -194,9 +195,6 @@ class LanScanner {
 
     void stopScan() {
       for (final isolate in isolatesList) {
-        // if (debugLogging) {
-        //   print('Killing thread: ${isolate.debugName}');
-        // }
         isolate.kill(priority: Isolate.immediate);
       }
 

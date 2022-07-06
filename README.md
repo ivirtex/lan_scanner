@@ -14,8 +14,6 @@ Blocking factors:
 [Issue #1](https://github.com/point-source/dart_ping/issues/6)  
 [Issue #2](https://github.com/dart-lang/sdk/issues/37022)
 
-Due to my exams, I won't have much time to work on this for the next 2 to 3 months, but if you have any suggestions on how to make a workaround for iOS, please let me know.
-
 [pub.dev page](https://pub.dev/packages/lan_scanner) | [API reference](https://pub.dev/documentation/lan_scanner/latest/)
 
 ## Getting Started
@@ -23,7 +21,7 @@ Due to my exams, I won't have much time to work on this for the next 2 to 3 mont
 Add the package to your pubspec.yaml:
 
 ```yaml
-lan_scanner: ^3.4.0
+lan_scanner: ^3.5.0
 ```
 
 Import the library:
@@ -55,11 +53,18 @@ var wifiIP = await NetworkInfo().getWifiIP()
 var subnet = ipToCSubnet(wifiIP);
 ```
 
+**Warning:**  
+In order to use this package in the release mode, you may need to add the `android.permission.INTERNET` to your `AndroidManifest.xml` file:
+
+```xml
+<uses-permission android:name="android.permission.INTERNET" />
+```
+
 ## Features, bugs and contributions
 
 Feel free to contribute to this project.
 
-Please file feature requests and bugs at the [issue tracker](https://github.com/ivirtex/lan_scanner).
+Please file feature requests and bugs at the [issue tracker](https://github.com/ivirtex/lan_scanner).  
 If you fixed a bug or implemented a feature by yourself, feel free to send a [pull request](https://github.com/ivirtex/lan_scanner/pulls).
 
 ## Sponsoring
