@@ -4,6 +4,7 @@ class HostModel {
   HostModel({
     required this.ip,
     required this.isReachable,
+    this.pingTime,
     this.errorCode,
   });
 
@@ -12,6 +13,9 @@ class HostModel {
 
   /// Reachability status of the device
   final bool isReachable;
+
+  /// Time it took to reach the device
+  final Duration? pingTime;
 
   /// The optional error code if the device didn't respond
   final int? errorCode;
