@@ -56,14 +56,7 @@ packages:
       name: dart_ping
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "6.1.2"
-  dart_ping_ios:
-    dependency: transitive
-    description:
-      name: dart_ping_ios
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.0"
+    version: "7.0.1"
   fake_async:
     dependency: transitive
     description:
@@ -76,13 +69,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_icmp_ping:
-    dependency: transitive
-    description:
-      name: flutter_icmp_ping
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "3.0.2"
   flutter_lints:
     dependency: "direct dev"
     description:
@@ -98,10 +84,10 @@ packages:
   lan_scanner:
     dependency: "direct main"
     description:
-      name: lan_scanner
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "3.3.0"
+      path: "C:\\Users\\hjozw\\OneDrive\\Dokumenty\\Development\\Flutter\\lan_scanner"
+      relative: false
+    source: path
+    version: "3.5.0"
   lints:
     dependency: transitive
     description:
@@ -192,5 +178,4 @@ packages:
     source: hosted
     version: "2.1.2"
 sdks:
-  dart: ">=2.17.0-0 <3.0.0"
-  flutter: ">=1.20.0"
+  dart: ">=2.17.0 <3.0.0"

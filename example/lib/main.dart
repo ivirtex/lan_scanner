@@ -28,6 +28,8 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final List<HostModel> _hosts = <HostModel>[];
 
+  double progress = 0.0;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,16 +40,24 @@ class _MyHomePageState extends State<MyHomePage> {
         child: SingleChildScrollView(
           child: Column(
             children: [
+              LinearProgressIndicator(value: progress),
               ElevatedButton(
                 onPressed: () {
-                  final scanner = LanScanner(debugLogging: true);
+                  setState(() {
+                    progress = 0.0;
+                    _hosts.clear();
+                  });
 
+                  final scanner = LanScanner(debugLogging: true);
                   final stream = scanner.icmpScan(
                     '192.168.0',
-                    progressCallback: (progress) {
-                      if (kDebugMode) {
-                        print('progress: $progress');
-                      }
+                    scanThreads: 20,
+                    progressCallback: (newProgress) {
+                      setState(() {
+                        progress = newProgress;
+                      });
+
+                      print('progress: $progress');
                     },
                   );
 
@@ -62,6 +72,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ListView.builder(
                 physics: const NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
+                itemCount: _hosts.length,
                 itemBuilder: (context, index) {
                   final host = _hosts[index];
 
@@ -71,7 +82,6 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                   );
                 },
-                itemCount: _hosts.length,
               ),
             ],
           ),
