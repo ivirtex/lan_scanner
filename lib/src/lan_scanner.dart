@@ -48,7 +48,8 @@ class LanScanner {
       final Ping pingRequest;
 
       try {
-        pingRequest = Ping(hostToPing, count: 1, timeout: timeout);
+        pingRequest =
+            Ping(hostToPing, count: 1, timeout: timeout, forceCodepage: true);
       } catch (exc) {
         if (exc is UnimplementedError &&
             (exc.message?.contains('iOS') ?? false)) {
