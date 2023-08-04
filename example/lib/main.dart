@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lan_scanner/lan_scanner.dart';
+import 'package:network_info_plus/network_info_plus.dart';
 
 void main() {
   runApp(const MyApp());
@@ -41,7 +42,7 @@ class _MyHomePageState extends State<MyHomePage> {
             children: [
               LinearProgressIndicator(value: progress),
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   setState(() {
                     progress = 0.0;
                     _hosts.clear();
@@ -49,7 +50,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
                   final scanner = LanScanner(debugLogging: true);
                   final stream = scanner.icmpScan(
-                    '192.168.0',
+                    ipToCSubnet(await NetworkInfo().getWifiIP() ?? ''),
                     scanThreads: 20,
                     progressCallback: (newProgress) {
                       setState(() {

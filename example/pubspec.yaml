@@ -36,6 +36,7 @@ dependencies:
 
   lan_scanner:
     path: ../
+  network_info_plus: ^4.0.2
 
 dev_dependencies:
   flutter_test:

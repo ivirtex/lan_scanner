@@ -68,7 +68,11 @@ class LanScanner {
 
       try {
         await for (final PingData pingData in pingRequest.stream) {
-          // final int? responseTime = pingData.response?.time?.inMilliseconds;
+          final int? responseTime = pingData.response?.time?.inMilliseconds;
+
+          if (hostToPing == '192.168.68.1') {
+            print('responseTime: $responseTime');
+          }
 
           if (pingData.summary != null) {
             final PingSummary summary = pingData.summary!;
