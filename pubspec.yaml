@@ -1,16 +1,15 @@
 name: lan_scanner
 description: Dart / Flutter package that allows discovering network devices via multi-threaded ICMP pings.
-version: 3.5.0
+version: 4.0.0
 homepage: https://github.com/ivirtex/lan_scanner
 
 environment:
-  sdk: ">=2.12.0 <3.0.0"
+  sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
   dart_ping: ^9.0.0
 
 dev_dependencies:
-  dart_code_metrics: ^4.16.0
   import_sorter: ^4.6.0
-  test: ^1.21.4
-  very_good_analysis: ^3.0.1
+  test: ^1.24.5
+  very_good_analysis: ^5.0.0+1
