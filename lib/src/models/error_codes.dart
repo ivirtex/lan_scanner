@@ -1,5 +1,5 @@
 /// Represents predefined networking errors from Dart SDK
-
+///
 /// 13: Connection failed (OS Error: Permission denied)
 /// 49: Bind failed (OS Error: Can't assign requested address)
 /// 61: OS Error: Connection refused

@@ -34,8 +34,7 @@ class LanScanner {
   bool get isScanInProgress => _isScanInProgress;
 
   /// This method is used to spawn isolate for range scan.
-  /// It is not meant to be used directly.
-  /// It is used by [icmpScan] method.
+  /// Used by [icmpScan] method.
   Future<void> _icmpRangeScan(List<Object> args) async {
     final subnet = args[0] as String;
     final firstIP = args[1] as int;
@@ -117,7 +116,7 @@ class LanScanner {
     Duration timeout = const Duration(seconds: 1),
     ProgressCallback? progressCallback,
   }) {
-    late StreamController<HostModel> _controller;
+    late StreamController<HostModel> controller;
     final int isolateInstances = scanThreads;
     final int numOfHostsToPing = lastIP - firstIP + 1;
     final int rangeForEachIsolate =
@@ -127,18 +126,20 @@ class LanScanner {
     int numOfHostsPinged = 0;
 
     // Check for possible errors in the configuration
-    if (firstIP > lastIP) {
-      throw Exception("firstIP can't be larger than lastIP");
-    }
+    assert(
+      firstIP >= 1 && firstIP <= lastIP,
+      'firstIP must be between 1 and lastIP',
+    );
+
+    assert(
+      scanThreads >= 1,
+      'Scan threads must be at least 1',
+    );
 
     if (_isScanInProgress) {
       throw Exception(
         'Cannot begin scanning while the first one is still running',
       );
-    }
-
-    if (scanThreads < 1) {
-      throw Exception('Scan threads must be at least 1');
     }
 
     Future<void> startScan() async {
@@ -179,11 +180,11 @@ class LanScanner {
               print('Scan finished');
             }
             _isScanInProgress = false;
-            _controller.close();
+            controller.close();
           }
 
           if (isReachable) {
-            _controller.add(
+            controller.add(
               HostModel(
                 ip: hostToPing,
                 isReachable: isReachable,
@@ -200,16 +201,16 @@ class LanScanner {
       }
 
       _isScanInProgress = false;
-      _controller.close();
+      controller.close();
     }
 
-    _controller = StreamController<HostModel>(
+    controller = StreamController<HostModel>(
       onCancel: stopScan,
       onListen: startScan,
       onPause: stopScan,
       onResume: startScan,
     );
 
-    return _controller.stream;
+    return controller.stream;
   }
 }
