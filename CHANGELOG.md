@@ -1,8 +1,20 @@
 # Changelog
 
+## 4.0.0
+
+- Updated `dart_ping` to 9.0.0, which fixes bug on Windows ([Thanks, RikitoNoto](https://github.com/ivirtex/lan_scanner/pull/11)).
+- `HostModel` now uses `InternetAddress` type instead of `String` for address.
+- Added `quickIcmpScanSync()` and `quickIcmpScanAsync` methods.
+- Added initial support for iOS.
+- Added support for Dart 3.
+- Changed debug logging method.
+- Updated README to include configuration instructions for MacOS.
+- Refactored code.
+- Updated example.
+
 ## 3.5.0
 
-- Fixed new linter warnings,
+- Fixed new linter warnings.
 - Bumped `dart_ping` to 7.0.0
 - Updated documentation to mention required permission ([Thanks, DamnDaniel-98](https://github.com/ivirtex/lan_scanner/issues/4)).
 

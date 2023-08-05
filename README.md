@@ -7,13 +7,6 @@
 
 Note: This library is intended to be used on **[Class C](https://en.wikipedia.org/wiki/Classful_network#Classful_addressing_definition)** networks.
 
-**Warning:**  
-iOS platform is currently not supported.
-This is due to a compatibility issue with the underlying ping library.  
-Blocking factors:  
-[Issue #1](https://github.com/point-source/dart_ping/issues/6)  
-[Issue #2](https://github.com/dart-lang/sdk/issues/37022)
-
 [pub.dev page](https://pub.dev/packages/lan_scanner) | [API reference](https://pub.dev/documentation/lan_scanner/latest/)
 
 ## Getting Started
@@ -21,7 +14,7 @@ Blocking factors:
 Add the package to your pubspec.yaml:
 
 ```yaml
-lan_scanner: ^3.5.0
+lan_scanner: ^4.0.0
 ```
 
 Import the library:
@@ -45,19 +38,54 @@ stream.listen((HostModel device) {
 });
 ```
 
-If you don't know what is your subnet, you can use [network_info_plus](https://pub.dev/packages/network_info_plus) and then `ipToCSubnet()` function.
+If you don't know what subnet to provide, you can use [network_info_plus](https://pub.dev/packages/network_info_plus) to get your local IP and then `ipToCSubnet()` function, which will conviently strip the last octet of the IP address:
 
 ```dart
+// 192.168.0.1
 var wifiIP = await NetworkInfo().getWifiIP()
 
+// 192.168.0
 var subnet = ipToCSubnet(wifiIP);
 ```
 
+## iOS compatibility
+
+Due to the issue with Flutter platform channels ([#119207](https://github.com/flutter/flutter/issues/119207)), iOS platform is currently supported only when using the `quickIcmpScanSync()` method and requires additional steps:
+
+Add `dart_ping_ios` to your `pubspec.yaml`:
+
+```yaml
+dart_ping_ios: ^4.0.0
+```
+
+Call `register()` method before running your app:
+
+```dart
+void main() {
+  DartPingIOS.register();
+
+  runApp(const App());
+}
+```
+
+## Configuration
+
 **Warning:**  
-In order to use this package in the release mode, you may need to add the `android.permission.INTERNET` to your `AndroidManifest.xml` file:
+In order to use this package, you may need to do additional configuration on some platforms.
+
+Android:  
+Add the `android.permission.INTERNET` to your `AndroidManifest.xml` file:
 
 ```xml
 <uses-permission android:name="android.permission.INTERNET" />
+```
+
+MacOS:  
+Add following key to `DebugProfile.entitlements` and `Release.entitlements` files:
+
+```xml
+<key>com.apple.security.network.client</key>
+<true/>
 ```
 
 ## Features, bugs and contributions
@@ -71,4 +99,4 @@ If you fixed a bug or implemented a feature by yourself, feel free to send a [pu
 
 I am working on my packages in my free time.
 
-If this package is helping you, please consider [buying me a coffee](ko-fi.com/ivirtex), so I can keep updating and maintaining this package.
+If this package is helping you, please consider [buying me a coffee](https://ko-fi.com/ivirtex), so I can keep updating and maintaining this package.
