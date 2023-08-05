@@ -1,7 +1,7 @@
 # lan_scanner
 
-![pub.dev badge](https://img.shields.io/pub/v/lan_scanner)
-![GitHub build status](https://img.shields.io/github/workflow/status/ivirtex/lan_scanner/Dart)
+[![pub.dev badge](https://img.shields.io/pub/v/lan_scanner)](https://pub.dev/packages/lan_scanner)
+![GitHub build status](https://img.shields.io/github/actions/workflow/status/ivirtex/lan_scanner/dart.yml)
 
 [Dart](https://dart.dev) / [Flutter](https://flutter.dev) package that allows discovering network devices in local network ([LAN](https://en.wikipedia.org/wiki/Local_area_network)) via multi-threaded ICMP pings.
 

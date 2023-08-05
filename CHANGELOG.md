@@ -6,6 +6,7 @@
 - Renamed `HostModel` to `Host`.
 - `Host` now uses `InternetAddress` type instead of `String` for address.
 - Added `quickIcmpScanSync()` and `quickIcmpScanAsync` methods.
+- `ipToCSubnet()` now throws when invalid string is provided.
 - Added initial support for iOS.
 - Added support for Dart 3.
 - Changed debug logging method.
