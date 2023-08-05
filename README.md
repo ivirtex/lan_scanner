@@ -24,19 +24,15 @@ import 'package:lan_scanner/lan_scanner.dart';
 ```
 
 Create an instance of the class and call
-[`icmpScan()`](https://pub.dev/documentation/lan_scanner/latest/lan_scanner/LanScanner/icmpScan.html) on it:
+[`quickIcmpScanAsync()`](https://pub.dev/documentation/lan_scanner/latest/lan_scanner/LanScanner/quickIcmpScanAsync.html) on it:
 
 ```dart
 final scanner = LanScanner();
 
-final stream = scanner.icmpScan('192.168.0', progressCallback: (progress) {
-    print('Progress: $progress');
-});
-
-stream.listen((HostModel device) {
-    print("Found host: ${device.ip}");
-});
+final List<Host> hosts = scanner.quickIcmpScanAsync('192.168.0');
 ```
+
+There is also stream-based `icmpScan()` method available, which provides progress callback, but is much slower and resource hungry than other methods.
 
 If you don't know what subnet to provide, you can use [network_info_plus](https://pub.dev/packages/network_info_plus) to get your local IP and then `ipToCSubnet()` function, which will conviently strip the last octet of the IP address:
 
