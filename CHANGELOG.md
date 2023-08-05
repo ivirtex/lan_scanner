@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.0.0+1
+
+- Update README.
+
 ## 4.0.0
 
 - Updated `dart_ping` to 9.0.0, which fixes bug on Windows ([Thanks, RikitoNoto](https://github.com/ivirtex/lan_scanner/pull/11)).
