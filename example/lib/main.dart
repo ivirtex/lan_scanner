@@ -30,7 +30,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final List<HostModel> _hosts = <HostModel>[];
+  final List<Host> _hosts = <Host>[];
 
   double? progress = 0.0;
 
@@ -46,8 +46,8 @@ class _MyHomePageState extends State<MyHomePage> {
             children: [
               LinearProgressIndicator(value: progress),
               const SizedBox(height: 8),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              Wrap(
+                spacing: 8,
                 children: [
                   FilledButton(
                     onPressed: () async {
@@ -67,7 +67,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         },
                       );
 
-                      stream.listen((HostModel host) {
+                      stream.listen((Host host) {
                         setState(() {
                           _hosts.add(host);
                         });

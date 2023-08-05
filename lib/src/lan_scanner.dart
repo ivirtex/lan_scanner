@@ -17,7 +17,7 @@ import 'package:lan_scanner/lan_scanner.dart';
 class LanScanner {
   /// Constructor of [LanScanner]
   ///
-  /// Set [debugLogging] to true to enable printing
+  /// Set [debugLogging] to true to enable logging
   /// debug messages to the console.
   LanScanner({this.debugLogging = false});
 
@@ -43,7 +43,7 @@ class LanScanner {
   /// Avoid using high numbers of threads, as it may cause high memory usage.
   ///
   /// Consider using [quickIcmpScanSync] or [quickIcmpScanAsync].
-  Stream<HostModel> icmpScan(
+  Stream<Host> icmpScan(
     String subnet, {
     int firstIP = 1,
     int lastIP = 255,
@@ -51,7 +51,7 @@ class LanScanner {
     Duration timeout = const Duration(seconds: 1),
     ProgressCallback? progressCallback,
   }) {
-    late StreamController<HostModel> controller;
+    late StreamController<Host> controller;
     final isolateInstances = scanThreads;
     final numOfHostsToPing = lastIP - firstIP + 1;
     final rangeForEachIsolate = (numOfHostsToPing / isolateInstances).round();
@@ -120,7 +120,7 @@ class LanScanner {
 
           if (isReachable) {
             controller.add(
-              HostModel(
+              Host(
                 internetAddress: InternetAddress(hostToPing),
                 pingTime:
                     pingTime != null ? Duration(milliseconds: pingTime) : null,
@@ -140,7 +140,7 @@ class LanScanner {
       controller.close();
     }
 
-    controller = StreamController<HostModel>(
+    controller = StreamController<Host>(
       onCancel: stopScan,
       onListen: startScan,
       onPause: stopScan,
@@ -159,19 +159,19 @@ class LanScanner {
   /// This method may block the main thread, so on
   /// platform other than iOS it is recommended to use
   /// [quickIcmpScanAsync] instead.
-  Future<List<HostModel>> quickIcmpScanSync(
+  Future<List<Host>> quickIcmpScanSync(
     String subnet, {
     int firstIP = 1,
     int lastIP = 255,
     Duration timeout = const Duration(seconds: 1),
   }) async {
-    final hostFutures = <Future<HostModel?>>[];
+    final hostFutures = <Future<Host?>>[];
 
     for (var currAddr = firstIP; currAddr <= lastIP; ++currAddr) {
       final hostToPing = '$subnet.$currAddr';
 
       hostFutures.add(
-        _getHostFromPing(
+        _pingHost(
           hostToPing,
           timeout: timeout.inSeconds,
         ),
@@ -183,7 +183,7 @@ class LanScanner {
 
     return resolvedHosts
         .where((element) => element != null)
-        .cast<HostModel>()
+        .cast<Host>()
         .toList();
   }
 
@@ -191,13 +191,13 @@ class LanScanner {
   ///
   /// Works the same as [quickIcmpScanSync], but uses
   /// isolate to avoid blocking the main thread.
-  Future<List<HostModel>> quickIcmpScanAsync(
+  Future<List<Host>> quickIcmpScanAsync(
     String subnet, {
     int firstIP = 1,
     int lastIP = 255,
     Duration timeout = const Duration(seconds: 1),
   }) {
-    final completer = Completer<List<HostModel>>();
+    final completer = Completer<List<Host>>();
     final receivePort = ReceivePort();
     final isolateArgs = [
       subnet,
@@ -207,14 +207,14 @@ class LanScanner {
       receivePort.sendPort,
     ];
 
-    final hosts = <HostModel>[];
+    final hosts = <Host>[];
 
     receivePort.listen((msg) {
       if (msg is List) {
         final address = msg.elementAt(0) as String;
         final pingTime = msg.elementAtOrNull(1) as int?;
 
-        final host = HostModel(
+        final host = Host(
           internetAddress: InternetAddress(address),
           pingTime: pingTime != null ? Duration(microseconds: pingTime) : null,
         );
@@ -308,13 +308,13 @@ class LanScanner {
     final timeout = args[3] as int;
     final sendPort = args[4] as SendPort;
 
-    final hostFutures = <Future<HostModel?>>[];
+    final hostFutures = <Future<Host?>>[];
 
     for (var currAddr = firstIP; currAddr <= lastIP; ++currAddr) {
       final hostToPing = '$subnet.$currAddr';
 
       hostFutures.add(
-        _getHostFromPing(
+        _pingHost(
           hostToPing,
           timeout: timeout,
         ),
@@ -335,7 +335,7 @@ class LanScanner {
     sendPort.send('Complete');
   }
 
-  Future<HostModel?> _getHostFromPing(
+  Future<Host?> _pingHost(
     String target, {
     required int timeout,
   }) async {
@@ -355,20 +355,21 @@ class LanScanner {
       }
     }
 
-    final data = await pingRequest.stream.first;
-    if (debugLogging) {
-      log('$data from $target');
-    }
+    await for (final data in pingRequest.stream) {
+      if (debugLogging) {
+        log('$data from $target');
+      }
 
-    if (data.response != null && data.error == null) {
-      final response = data.response!;
+      if (data.response != null && data.error == null) {
+        final response = data.response!;
 
-      return HostModel(
-        internetAddress: InternetAddress(target),
-        pingTime: response.time != null
-            ? Duration(microseconds: response.time!.inMicroseconds)
-            : null,
-      );
+        return Host(
+          internetAddress: InternetAddress(target),
+          pingTime: response.time != null
+              ? Duration(microseconds: response.time!.inMicroseconds)
+              : null,
+        );
+      }
     }
 
     return null;

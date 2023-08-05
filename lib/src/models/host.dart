@@ -1,9 +1,10 @@
+// Dart imports:
 import 'dart:io';
 
 /// Represents a device in the network
-class HostModel {
+class Host {
   /// Constructor for a device address
-  HostModel({
+  Host({
     required this.internetAddress,
     this.pingTime,
   });

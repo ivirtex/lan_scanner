@@ -3,7 +3,8 @@
 ## 4.0.0
 
 - Updated `dart_ping` to 9.0.0, which fixes bug on Windows ([Thanks, RikitoNoto](https://github.com/ivirtex/lan_scanner/pull/11)).
-- `HostModel` now uses `InternetAddress` type instead of `String` for address.
+- Renamed `HostModel` to `Host`.
+- `Host` now uses `InternetAddress` type instead of `String` for address.
 - Added `quickIcmpScanSync()` and `quickIcmpScanAsync` methods.
 - Added initial support for iOS.
 - Added support for Dart 3.
